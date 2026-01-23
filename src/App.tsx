@@ -106,11 +106,17 @@ function App() {
     const now = new Date();
 
     setShoppingList((prev) =>
-      prev.map((item) => ({
-        ...item,
-        completed: !allCompleted,
-        completedAt: !allCompleted ? now : null,
-      })),
+      prev.map((item) => {
+        if (allCompleted) {
+          return { ...item, completed: false, completedAt: null };
+        }
+
+        if (item.completed) {
+          return item;
+        }
+
+        return { ...item, completed: true, completedAt: now };
+      }),
     );
   }
 
