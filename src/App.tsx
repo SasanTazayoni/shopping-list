@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import "./css/styles.css";
+import ShoppingList from "./assets/components/ShoppingList";
+import Controls from "./assets/components/Controls";
+import ToggleAll from "./assets/components/ToggleAll";
 
-type TodoItem = {
+export type TodoItem = {
   text: string;
   completed: boolean;
   createdAt: Date;
@@ -102,7 +105,6 @@ function App() {
   }
 
   function checkUncheckAllItems() {
-    const allCompleted = shoppingList.every((item) => item.completed);
     const now = new Date();
 
     setShoppingList((prev) =>
@@ -124,60 +126,30 @@ function App() {
     return date ? date.toLocaleString() : "—";
   }
 
+  const allCompleted =
+    shoppingList.length > 0 && shoppingList.every((item) => item.completed);
+
   return (
     <div className="app">
       <h1>Shopping List</h1>
 
-      <div className="controls">
-        <input
-          type="text"
-          value={itemToAdd}
-          onChange={(e) => setItemToAdd(e.target.value)}
-          onKeyDown={addListItemKeyboard}
-          placeholder="Add an item…"
-        />
-        <button onClick={addListItem}>✓</button>
-        <button onClick={sortShoppingList}>
-          {sortOrder === "asc" ? "A→Z" : "Z→A"}
-        </button>
-      </div>
+      <Controls
+        itemToAdd={itemToAdd}
+        setItemToAdd={setItemToAdd}
+        addListItem={addListItem}
+        addListItemKeyboard={addListItemKeyboard}
+        sortShoppingList={sortShoppingList}
+        sortOrder={sortOrder}
+      />
 
-      <label className="toggle-all">
-        <input
-          type="checkbox"
-          checked={
-            shoppingList.length > 0 &&
-            shoppingList.every((item) => item.completed)
-          }
-          onChange={checkUncheckAllItems}
-        />
-        Check/Uncheck all
-      </label>
+      <ToggleAll checked={allCompleted} onToggle={checkUncheckAllItems} />
 
-      <ul className="list">
-        {shoppingList.map((item, index) => (
-          <li key={index} className="list-item">
-            <div className="item-main">
-              <input
-                type="checkbox"
-                checked={item.completed}
-                onChange={() => toggleItem(index)}
-              />
-              <span className={item.completed ? "completed" : ""}>
-                {item.text}
-              </span>
-              <button className="delete" onClick={() => removeItem(index)}>
-                ✕
-              </button>
-            </div>
-
-            <div className="item-meta">
-              <small>Created: {formatDate(item.createdAt)}</small>
-              <small>Completed: {formatDate(item.completedAt)}</small>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <ShoppingList
+        shoppingList={shoppingList}
+        toggleItem={toggleItem}
+        removeItem={removeItem}
+        formatDate={formatDate}
+      />
     </div>
   );
 }
