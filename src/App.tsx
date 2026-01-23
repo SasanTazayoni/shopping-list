@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./css/styles.css";
 
 type TodoItem = {
@@ -8,10 +8,42 @@ type TodoItem = {
   completedAt: Date | null;
 };
 
+type StoredTodoItem = {
+  text: string;
+  completed: boolean;
+  createdAt: string;
+  completedAt: string | null;
+};
+
+const STORAGE_KEY = "shoppingList";
+
 function App() {
   const [itemToAdd, setItemToAdd] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [shoppingList, setShoppingList] = useState<TodoItem[]>([]);
+  const [shoppingList, setShoppingList] = useState<TodoItem[]>(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return [];
+
+    const parsed: StoredTodoItem[] = JSON.parse(stored);
+
+    return parsed.map((item) => ({
+      text: item.text,
+      completed: item.completed,
+      createdAt: new Date(item.createdAt),
+      completedAt: item.completedAt ? new Date(item.completedAt) : null,
+    }));
+  });
+
+  useEffect(() => {
+    const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
+      text: item.text,
+      completed: item.completed,
+      createdAt: item.createdAt.toISOString(),
+      completedAt: item.completedAt ? item.completedAt.toISOString() : null,
+    }));
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
+  }, [shoppingList]);
 
   function addListItem() {
     const value = itemToAdd.trim();
