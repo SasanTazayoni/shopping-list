@@ -1,4 +1,105 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 2rem;
+}
+
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+h1 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.controls input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.controls button {
+  min-width: 44px;
+  height: 40px;
+  padding: 0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.toggle-all {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  border-bottom: 1px solid #eee;
+  padding: 0.75rem 0;
+}
+
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-main span {
+  flex: 1;
+}
+
 .completed {
   text-decoration: line-through;
-  opacity: 0.6;
+  color: #888;
+}
+
+.delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+}
+
+.delete:hover {
+  color: #d00;
+}
+
+.item-meta {
+  margin-left: 1.75rem;
+  margin-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.item-meta small {
+  color: #777;
 }
