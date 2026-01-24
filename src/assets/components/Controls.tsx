@@ -22,7 +22,7 @@ export default function Controls({
         value={itemToAdd}
         onChange={(e) => setItemToAdd(e.target.value)}
         onKeyDown={addListItemKeyboard}
-        placeholder="Add an item…"
+        placeholder="Add an item..."
       />
       <button onClick={addListItem}>✓</button>
       <button onClick={sortShoppingList}>
