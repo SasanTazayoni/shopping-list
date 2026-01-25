@@ -3,6 +3,7 @@ import "./css/styles.css";
 import ShoppingList from "./assets/components/ShoppingList";
 import Controls from "./assets/components/Controls";
 import ToggleAll from "./assets/components/ToggleAll";
+import { toggleAllItems, toggleItemAtIndex } from "./utils/shoppingListLogic";
 
 export type TodoItem = {
   text: string;
@@ -72,17 +73,8 @@ function App() {
   }
 
   function toggleItem(indexToToggle: number) {
-    setShoppingList((prev) =>
-      prev.map((item, index) =>
-        index === indexToToggle
-          ? {
-              ...item,
-              completed: !item.completed,
-              completedAt: !item.completed ? new Date() : null,
-            }
-          : item,
-      ),
-    );
+    const now = new Date();
+    setShoppingList((prev) => toggleItemAtIndex(prev, indexToToggle, now));
   }
 
   function removeItem(indexToRemove: number) {
@@ -106,20 +98,7 @@ function App() {
 
   function checkUncheckAllItems() {
     const now = new Date();
-
-    setShoppingList((prev) =>
-      prev.map((item) => {
-        if (allCompleted) {
-          return { ...item, completed: false, completedAt: null };
-        }
-
-        if (item.completed) {
-          return item;
-        }
-
-        return { ...item, completed: true, completedAt: now };
-      }),
-    );
+    setShoppingList((prev) => toggleAllItems(prev, allCompleted, now));
   }
 
   function formatDate(date: Date | null) {
