@@ -1,6 +1,5 @@
 type ControlsProps = {
-  itemToAdd: string;
-  setItemToAdd: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement | null>;
   addListItem: () => void;
   addListItemKeyboard: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   sortShoppingList: () => void;
@@ -8,8 +7,7 @@ type ControlsProps = {
 };
 
 export default function Controls({
-  itemToAdd,
-  setItemToAdd,
+  inputRef,
   addListItem,
   addListItemKeyboard,
   sortShoppingList,
@@ -18,9 +16,8 @@ export default function Controls({
   return (
     <div className="controls">
       <input
+        ref={inputRef}
         type="text"
-        value={itemToAdd}
-        onChange={(e) => setItemToAdd(e.target.value)}
         onKeyDown={addListItemKeyboard}
         placeholder="Add an item..."
       />

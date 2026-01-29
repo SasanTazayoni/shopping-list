@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./css/styles.css";
 import ShoppingList from "./assets/components/ShoppingList";
 import Controls from "./assets/components/Controls";
@@ -22,7 +22,6 @@ type StoredTodoItem = {
 const STORAGE_KEY = "shoppingList";
 
 function App() {
-  const [itemToAdd, setItemToAdd] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [shoppingList, setShoppingList] = useState<TodoItem[]>(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -38,6 +37,8 @@ function App() {
     }));
   });
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
       text: item.text,
@@ -50,8 +51,8 @@ function App() {
   }, [shoppingList]);
 
   function addListItem() {
-    const value = itemToAdd.trim();
-    if (value === "") return;
+    const value = inputRef.current?.value.trim();
+    if (!value) return;
 
     setShoppingList((prev) => [
       ...prev,
@@ -63,7 +64,7 @@ function App() {
       },
     ]);
 
-    setItemToAdd("");
+    inputRef.current!.value = "";
   }
 
   function addListItemKeyboard(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -113,8 +114,7 @@ function App() {
       <h1>Shopping List</h1>
 
       <Controls
-        itemToAdd={itemToAdd}
-        setItemToAdd={setItemToAdd}
+        inputRef={inputRef}
         addListItem={addListItem}
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={sortShoppingList}
