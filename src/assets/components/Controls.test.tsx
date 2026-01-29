@@ -5,11 +5,12 @@ import Controls from "./Controls";
 import userEvent from "@testing-library/user-event";
 
 describe("Controls", () => {
+  const inputRef = { current: null };
+
   it("renders input and buttons", () => {
     render(
       <Controls
-        itemToAdd=""
-        setItemToAdd={vi.fn()}
+        inputRef={inputRef}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
@@ -26,51 +27,12 @@ describe("Controls", () => {
     expect(sortButton).toBeInTheDocument();
   });
 
-  it("reflects itemToAdd in the input", () => {
-    render(
-      <Controls
-        itemToAdd="Milk"
-        setItemToAdd={vi.fn()}
-        addListItem={vi.fn()}
-        addListItemKeyboard={vi.fn()}
-        sortShoppingList={vi.fn()}
-        sortOrder="asc"
-      />,
-    );
-
-    const input = screen.getByPlaceholderText("Add an item...");
-
-    expect(input).toHaveValue("Milk");
-  });
-
-  it("calls setItemToAdd on input change", async () => {
-    const setItemToAdd = vi.fn();
-
-    render(
-      <Controls
-        itemToAdd=""
-        setItemToAdd={setItemToAdd}
-        addListItem={vi.fn()}
-        addListItemKeyboard={vi.fn()}
-        sortShoppingList={vi.fn()}
-        sortOrder="asc"
-      />,
-    );
-
-    const user = userEvent.setup();
-    const input = screen.getByPlaceholderText("Add an item...");
-    await user.type(input, "B");
-
-    expect(setItemToAdd).toHaveBeenCalledWith("B");
-  });
-
   it("calls addListItem when add button is clicked", async () => {
     const addListItem = vi.fn();
 
     render(
       <Controls
-        itemToAdd=""
-        setItemToAdd={vi.fn()}
+        inputRef={inputRef}
         addListItem={addListItem}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
@@ -90,8 +52,7 @@ describe("Controls", () => {
 
     render(
       <Controls
-        itemToAdd=""
-        setItemToAdd={vi.fn()}
+        inputRef={inputRef}
         addListItem={vi.fn()}
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={vi.fn()}
@@ -111,8 +72,7 @@ describe("Controls", () => {
 
     render(
       <Controls
-        itemToAdd=""
-        setItemToAdd={vi.fn()}
+        inputRef={inputRef}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={sortShoppingList}
@@ -130,8 +90,7 @@ describe("Controls", () => {
   it("shows Z→A when sortOrder is desc", () => {
     render(
       <Controls
-        itemToAdd=""
-        setItemToAdd={vi.fn()}
+        inputRef={inputRef}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
