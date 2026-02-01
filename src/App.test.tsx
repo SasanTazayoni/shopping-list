@@ -149,6 +149,48 @@ describe("App", () => {
     expect(screen.queryByText("Milk")).not.toBeInTheDocument();
   });
 
+  it("edits an item when clicking edit, typing, and pressing Enter", async () => {
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-2",
+        text: "Eggs",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+    const user = userEvent.setup();
+
+    expect(screen.getByText("Milk")).toBeInTheDocument();
+
+    const editButtons = screen.getAllByRole("button", { name: "✎" });
+    await user.click(editButtons[0]);
+
+    const editInput = screen.getByDisplayValue("Milk");
+    expect(editInput).toBeInTheDocument();
+    expect(editInput).toHaveFocus();
+
+    await user.clear(editInput);
+    await user.type(editInput, "Bread{Enter}");
+
+    expect(screen.queryByText("Milk")).not.toBeInTheDocument();
+    expect(screen.getByText("Bread")).toBeInTheDocument();
+    expect(screen.getByText("Eggs")).toBeInTheDocument();
+
+    expect(screen.getAllByRole("button", { name: "✎" })).toHaveLength(2);
+  });
+
   it("sorts items A→Z then Z→A when clicking the sort button", async () => {
     const seeded = [
       {
@@ -268,6 +310,7 @@ describe("App", () => {
   it("returns the current state for unknown action types", () => {
     const initialState = [
       {
+        id: "test-id-123",
         text: "Milk",
         completed: false,
         createdAt: new Date(),
@@ -275,10 +318,9 @@ describe("App", () => {
       },
     ];
 
-    const result = shoppingListReducer(
-      initialState,
-      { type: "UNKNOWN_ACTION" } as unknown as ShoppingListAction,
-    );
+    const result = shoppingListReducer(initialState, {
+      type: "UNKNOWN_ACTION",
+    } as unknown as ShoppingListAction);
 
     expect(result).toBe(initialState);
   });
