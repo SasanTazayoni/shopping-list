@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
+import { shoppingListReducer, type ShoppingListAction } from "./App";
 
 describe("App", () => {
   beforeEach(() => {
@@ -262,5 +263,23 @@ describe("App", () => {
     await user.click(hideCompletedCheckbox);
     expect(screen.queryByText("Milk")).not.toBeInTheDocument();
     expect(screen.getByText("Eggs")).toBeInTheDocument();
+  });
+
+  it("returns the current state for unknown action types", () => {
+    const initialState = [
+      {
+        text: "Milk",
+        completed: false,
+        createdAt: new Date(),
+        completedAt: null,
+      },
+    ];
+
+    const result = shoppingListReducer(
+      initialState,
+      { type: "UNKNOWN_ACTION" } as unknown as ShoppingListAction,
+    );
+
+    expect(result).toBe(initialState);
   });
 });
