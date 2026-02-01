@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import "./css/styles.css";
-import ShoppingList from "./assets/components/ShoppingList";
-import Controls from "./assets/components/Controls";
-import ToggleAll from "./assets/components/ToggleAll";
+import ShoppingList from "./components/ShoppingList";
+import Controls from "./components/Controls";
+import ToggleAll from "./components/ToggleAll";
 import { toggleAllItems, toggleItemAtIndex } from "./utils/shoppingListLogic";
+import FilterForm from "./components/FilterForm";
 
 export type TodoItem = {
   text: string;
@@ -36,7 +37,8 @@ function App() {
       completedAt: item.completedAt ? new Date(item.completedAt) : null,
     }));
   });
-
+  const [filterText, setFilterText] = useState("");
+  const [hideCompleted, setHideCompleted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -49,6 +51,16 @@ function App() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
   }, [shoppingList]);
+
+  const filteredList = shoppingList.filter((item) => {
+    const filteredSearch = item.text
+      .toLowerCase()
+      .includes(filterText.toLowerCase());
+
+    const display = !hideCompleted || !item.completed;
+
+    return filteredSearch && display;
+  });
 
   function addListItem() {
     const value = inputRef.current?.value.trim();
@@ -123,8 +135,15 @@ function App() {
 
       <ToggleAll checked={allCompleted} onToggle={checkUncheckAllItems} />
 
+      <FilterForm
+        filterText={filterText}
+        setFilterText={setFilterText}
+        hideCompleted={hideCompleted}
+        setHideCompleted={setHideCompleted}
+      />
+
       <ShoppingList
-        shoppingList={shoppingList}
+        shoppingList={filteredList}
         toggleItem={toggleItem}
         removeItem={removeItem}
         formatDate={formatDate}
