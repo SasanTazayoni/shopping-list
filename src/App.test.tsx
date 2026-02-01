@@ -212,9 +212,12 @@ describe("App", () => {
     const toggleAllCheckbox = screen.getByRole("checkbox", {
       name: /check\/uncheck all/i,
     });
+    const hideCompletedCheckbox = screen.getByRole("checkbox", {
+      name: /hide completed/i,
+    });
     const itemCheckboxes = screen
       .getAllByRole("checkbox")
-      .filter((cb) => cb !== toggleAllCheckbox);
+      .filter((cb) => cb !== toggleAllCheckbox && cb !== hideCompletedCheckbox);
 
     expect(itemCheckboxes[0]).not.toBeChecked();
     expect(itemCheckboxes[1]).not.toBeChecked();
@@ -228,5 +231,36 @@ describe("App", () => {
 
     expect(itemCheckboxes[0]).not.toBeChecked();
     expect(itemCheckboxes[1]).not.toBeChecked();
+  });
+
+  it("hides completed items when 'Hide completed' is checked", async () => {
+    const seeded = [
+      {
+        text: "Milk",
+        completed: true,
+        createdAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+      },
+      {
+        text: "Eggs",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+    const user = userEvent.setup();
+    expect(screen.getByText("Milk")).toBeInTheDocument();
+    expect(screen.getByText("Eggs")).toBeInTheDocument();
+
+    const hideCompletedCheckbox = screen.getByRole("checkbox", {
+      name: /hide completed/i,
+    });
+    await user.click(hideCompletedCheckbox);
+    expect(screen.queryByText("Milk")).not.toBeInTheDocument();
+    expect(screen.getByText("Eggs")).toBeInTheDocument();
   });
 });
