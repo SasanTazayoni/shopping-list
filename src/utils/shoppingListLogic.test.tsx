@@ -1,18 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { toggleAllItems, toggleItemAtIndex } from "./shoppingListLogic";
+import { toggleAllItems, toggleItemById } from "./shoppingListLogic";
 import type { TodoItem } from "../App";
 
-describe("toggleItemAtIndex", () => {
+describe("toggleItemById", () => {
   it("marks an incomplete item as completed and sets completedAt to now", () => {
     const now = new Date("2026-01-01T12:00:00.000Z");
     const items: TodoItem[] = [
       {
+        id: "item-1",
         text: "Item 1",
         completed: false,
         createdAt: new Date(),
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Item 2",
         completed: false,
         createdAt: new Date(),
@@ -20,7 +22,7 @@ describe("toggleItemAtIndex", () => {
       },
     ];
 
-    const result = toggleItemAtIndex(items, 0, now);
+    const result = toggleItemById(items, "item-1", now);
 
     expect(result[0].completed).toBe(true);
     expect(result[0].completedAt).toEqual(now);
@@ -31,12 +33,14 @@ describe("toggleItemAtIndex", () => {
     const now = new Date("2026-01-01T12:00:00.000Z");
     const items: TodoItem[] = [
       {
+        id: "item-1",
         text: "Item 1",
         completed: true,
         createdAt: new Date(),
         completedAt: new Date("2026-01-01T10:00:00.000Z"),
       },
       {
+        id: "item-2",
         text: "Item 2",
         completed: false,
         createdAt: new Date(),
@@ -44,7 +48,7 @@ describe("toggleItemAtIndex", () => {
       },
     ];
 
-    const result = toggleItemAtIndex(items, 0, now);
+    const result = toggleItemById(items, "item-1", now);
 
     expect(result[0].completed).toBe(false);
     expect(result[0].completedAt).toBeNull();
@@ -58,12 +62,14 @@ describe("toggleAllItems", () => {
 
     const items: TodoItem[] = [
       {
+        id: "item-1",
         text: "Milk",
         completed: true,
         createdAt: now,
         completedAt: new Date("2026-01-01T09:30:00.000Z"),
       },
       {
+        id: "item-2",
         text: "Eggs",
         completed: true,
         createdAt: now,
@@ -82,12 +88,14 @@ describe("toggleAllItems", () => {
 
     const items: TodoItem[] = [
       {
+        id: "item-1",
         text: "Milk",
         completed: false,
         createdAt: now,
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Eggs",
         completed: false,
         createdAt: now,
@@ -108,12 +116,14 @@ describe("toggleAllItems", () => {
 
     const items: TodoItem[] = [
       {
+        id: "item-1",
         text: "Milk",
         completed: true,
         createdAt: earlier,
         completedAt: earlier,
       },
       {
+        id: "item-2",
         text: "Eggs",
         completed: false,
         createdAt: earlier,

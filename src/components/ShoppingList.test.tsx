@@ -8,12 +8,14 @@ describe("ShoppingList", () => {
   it("renders list items with correct text", () => {
     const shoppingList = [
       {
+        id: "item-1",
         text: "Milk",
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Bread",
         completed: true,
         createdAt: new Date("2024-01-02"),
@@ -26,6 +28,7 @@ describe("ShoppingList", () => {
         shoppingList={shoppingList}
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
+        editItem={vi.fn()}
         formatDate={vi.fn(() => "formatted date")}
       />,
     );
@@ -34,16 +37,18 @@ describe("ShoppingList", () => {
     expect(screen.getByText("Bread")).toBeInTheDocument();
   });
 
-  it("calls toggleItem with correct index when checkbox is clicked", async () => {
+  it("calls toggleItem with correct id when checkbox is clicked", async () => {
     const toggleItem = vi.fn();
     const shoppingList = [
       {
+        id: "item-1",
         text: "Milk",
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Bread",
         completed: false,
         createdAt: new Date("2024-01-02"),
@@ -56,6 +61,7 @@ describe("ShoppingList", () => {
         shoppingList={shoppingList}
         toggleItem={toggleItem}
         removeItem={vi.fn()}
+        editItem={vi.fn()}
         formatDate={vi.fn(() => "formatted date")}
       />,
     );
@@ -64,19 +70,21 @@ describe("ShoppingList", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     await user.click(checkboxes[1]);
 
-    expect(toggleItem).toHaveBeenCalledWith(1);
+    expect(toggleItem).toHaveBeenCalledWith("item-2");
   });
 
-  it("calls removeItem with correct index when delete button is clicked", async () => {
+  it("calls removeItem with correct id when delete button is clicked", async () => {
     const removeItem = vi.fn();
     const shoppingList = [
       {
+        id: "item-1",
         text: "Milk",
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Bread",
         completed: false,
         createdAt: new Date("2024-01-02"),
@@ -89,6 +97,7 @@ describe("ShoppingList", () => {
         shoppingList={shoppingList}
         toggleItem={vi.fn()}
         removeItem={removeItem}
+        editItem={vi.fn()}
         formatDate={vi.fn(() => "formatted date")}
       />,
     );
@@ -97,18 +106,20 @@ describe("ShoppingList", () => {
     const deleteButtons = screen.getAllByRole("button", { name: "✕" });
     await user.click(deleteButtons[1]);
 
-    expect(removeItem).toHaveBeenCalledWith(1);
+    expect(removeItem).toHaveBeenCalledWith("item-2");
   });
 
   it("reflects completed state in checkbox and styling", () => {
     const shoppingList = [
       {
+        id: "item-1",
         text: "Milk",
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
       },
       {
+        id: "item-2",
         text: "Bread",
         completed: true,
         createdAt: new Date("2024-01-02"),
@@ -121,6 +132,7 @@ describe("ShoppingList", () => {
         shoppingList={shoppingList}
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
+        editItem={vi.fn()}
         formatDate={vi.fn(() => "formatted date")}
       />,
     );
@@ -139,6 +151,7 @@ describe("ShoppingList", () => {
         shoppingList={[]}
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
+        editItem={vi.fn()}
         formatDate={vi.fn()}
       />,
     );
