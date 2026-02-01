@@ -1,12 +1,12 @@
 import type { TodoItem } from "../App";
 
-export function toggleItemAtIndex(
+export function toggleItemById(
   items: TodoItem[],
-  indexToToggle: number,
+  idToToggle: string,
   now: Date,
 ): TodoItem[] {
-  return items.map((item, index) => {
-    if (index !== indexToToggle) return item;
+  return items.map((item) => {
+    if (item.id !== idToToggle) return item;
 
     const willBeCompleted = !item.completed;
 

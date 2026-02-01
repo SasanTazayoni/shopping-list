@@ -3,10 +3,11 @@ import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
 import ToggleAll from "./components/ToggleAll";
-import { toggleAllItems, toggleItemAtIndex } from "./utils/shoppingListLogic";
+import { toggleAllItems, toggleItemById } from "./utils/shoppingListLogic";
 import FilterForm from "./components/FilterForm";
 
 export type TodoItem = {
+  id: string;
   text: string;
   completed: boolean;
   createdAt: Date;
@@ -14,6 +15,7 @@ export type TodoItem = {
 };
 
 type StoredTodoItem = {
+  id: string;
   text: string;
   completed: boolean;
   createdAt: string;
@@ -22,8 +24,9 @@ type StoredTodoItem = {
 
 export type ShoppingListAction =
   | { type: "ADD_ITEM"; payload: string }
-  | { type: "REMOVE_ITEM"; payload: number }
-  | { type: "TOGGLE_ITEM"; payload: number }
+  | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "EDIT_ITEM"; payload: { id: string; text: string } }
+  | { type: "TOGGLE_ITEM"; payload: string }
   | { type: "SORT_LIST"; payload: "asc" | "desc" }
   | { type: "TOGGLE_ALL"; payload: boolean };
 
@@ -36,6 +39,7 @@ export function shoppingListReducer(
       return [
         ...state,
         {
+          id: crypto.randomUUID(),
           text: action.payload,
           completed: false,
           createdAt: new Date(),
@@ -44,10 +48,10 @@ export function shoppingListReducer(
       ];
 
     case "REMOVE_ITEM":
-      return state.filter((_, index) => index !== action.payload);
+      return state.filter((item) => item.id !== action.payload);
 
     case "TOGGLE_ITEM":
-      return toggleItemAtIndex(state, action.payload, new Date());
+      return toggleItemById(state, action.payload, new Date());
 
     case "SORT_LIST":
       return [...state].sort((a, b) =>
@@ -58,6 +62,13 @@ export function shoppingListReducer(
 
     case "TOGGLE_ALL":
       return toggleAllItems(state, action.payload, new Date());
+
+    case "EDIT_ITEM":
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, text: action.payload.text }
+          : item,
+      );
 
     default:
       return state;
@@ -73,6 +84,7 @@ function App() {
     if (!stored) return [];
     const parsed: StoredTodoItem[] = JSON.parse(stored);
     return parsed.map((item) => ({
+      id: item.id || crypto.randomUUID(),
       text: item.text,
       completed: item.completed,
       createdAt: new Date(item.createdAt),
@@ -85,6 +97,7 @@ function App() {
 
   useEffect(() => {
     const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
+      id: item.id,
       text: item.text,
       completed: item.completed,
       createdAt: item.createdAt.toISOString(),
@@ -117,12 +130,16 @@ function App() {
     }
   }
 
-  function toggleItem(indexToToggle: number) {
-    dispatch({ type: "TOGGLE_ITEM", payload: indexToToggle });
+  function toggleItem(id: string) {
+    dispatch({ type: "TOGGLE_ITEM", payload: id });
   }
 
-  function removeItem(indexToRemove: number) {
-    dispatch({ type: "REMOVE_ITEM", payload: indexToRemove });
+  function removeItem(id: string) {
+    dispatch({ type: "REMOVE_ITEM", payload: id });
+  }
+
+  function editItem(id: string, newText: string) {
+    dispatch({ type: "EDIT_ITEM", payload: { id, text: newText } });
   }
 
   function sortShoppingList() {
@@ -166,6 +183,7 @@ function App() {
         shoppingList={filteredList}
         toggleItem={toggleItem}
         removeItem={removeItem}
+        editItem={editItem}
         formatDate={formatDate}
       />
     </div>
