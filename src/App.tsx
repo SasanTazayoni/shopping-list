@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
@@ -20,16 +20,58 @@ type StoredTodoItem = {
   completedAt: string | null;
 };
 
+export type ShoppingListAction =
+  | { type: "ADD_ITEM"; payload: string }
+  | { type: "REMOVE_ITEM"; payload: number }
+  | { type: "TOGGLE_ITEM"; payload: number }
+  | { type: "SORT_LIST"; payload: "asc" | "desc" }
+  | { type: "TOGGLE_ALL"; payload: boolean };
+
+export function shoppingListReducer(
+  state: TodoItem[],
+  action: ShoppingListAction,
+): TodoItem[] {
+  switch (action.type) {
+    case "ADD_ITEM":
+      return [
+        ...state,
+        {
+          text: action.payload,
+          completed: false,
+          createdAt: new Date(),
+          completedAt: null,
+        },
+      ];
+
+    case "REMOVE_ITEM":
+      return state.filter((_, index) => index !== action.payload);
+
+    case "TOGGLE_ITEM":
+      return toggleItemAtIndex(state, action.payload, new Date());
+
+    case "SORT_LIST":
+      return [...state].sort((a, b) =>
+        action.payload === "asc"
+          ? a.text.localeCompare(b.text)
+          : b.text.localeCompare(a.text),
+      );
+
+    case "TOGGLE_ALL":
+      return toggleAllItems(state, action.payload, new Date());
+
+    default:
+      return state;
+  }
+}
+
 const STORAGE_KEY = "shoppingList";
 
 function App() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [shoppingList, setShoppingList] = useState<TodoItem[]>(() => {
+  const [shoppingList, dispatch] = useReducer(shoppingListReducer, null, () => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return [];
-
     const parsed: StoredTodoItem[] = JSON.parse(stored);
-
     return parsed.map((item) => ({
       text: item.text,
       completed: item.completed,
@@ -65,17 +107,7 @@ function App() {
   function addListItem() {
     const value = inputRef.current?.value.trim();
     if (!value) return;
-
-    setShoppingList((prev) => [
-      ...prev,
-      {
-        text: value,
-        completed: false,
-        createdAt: new Date(),
-        completedAt: null,
-      },
-    ]);
-
+    dispatch({ type: "ADD_ITEM", payload: value });
     inputRef.current!.value = "";
   }
 
@@ -86,32 +118,20 @@ function App() {
   }
 
   function toggleItem(indexToToggle: number) {
-    const now = new Date();
-    setShoppingList((prev) => toggleItemAtIndex(prev, indexToToggle, now));
+    dispatch({ type: "TOGGLE_ITEM", payload: indexToToggle });
   }
 
   function removeItem(indexToRemove: number) {
-    setShoppingList((prev) =>
-      prev.filter((_, index) => index !== indexToRemove),
-    );
+    dispatch({ type: "REMOVE_ITEM", payload: indexToRemove });
   }
 
   function sortShoppingList() {
-    setShoppingList((prev) => {
-      const sorted = [...prev].sort((a, b) =>
-        sortOrder === "asc"
-          ? a.text.localeCompare(b.text)
-          : b.text.localeCompare(a.text),
-      );
-      return sorted;
-    });
-
+    dispatch({ type: "SORT_LIST", payload: sortOrder });
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   }
 
   function checkUncheckAllItems() {
-    const now = new Date();
-    setShoppingList((prev) => toggleAllItems(prev, allCompleted, now));
+    dispatch({ type: "TOGGLE_ALL", payload: allCompleted });
   }
 
   function formatDate(date: Date | null) {
