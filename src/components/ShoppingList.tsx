@@ -1,4 +1,4 @@
-import type { TodoItem } from "../../App";
+import type { TodoItem } from "../App";
 
 type ShoppingListProps = {
   shoppingList: TodoItem[];
