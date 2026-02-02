@@ -68,7 +68,6 @@ export default function ShoppingList({
               </span>
             )}
 
-            {/* Show save button when editing, edit button when not */}
             {editingId === item.id ? (
               <button className="edit" onClick={() => saveEdit(item.id)}>
                 ✓
@@ -82,7 +81,6 @@ export default function ShoppingList({
               </button>
             )}
 
-            {/* When editing: ✕ cancels. When not editing: ✕ deletes */}
             <button
               className="delete"
               onClick={() =>

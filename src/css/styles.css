@@ -357,7 +357,6 @@ h1 {
   font-weight: 600;
 }
 
-/* Empty state */
 .list:empty::after {
   content: "No items yet. Add your first item above!";
   display: block;
@@ -367,7 +366,6 @@ h1 {
   font-style: italic;
 }
 
-/* Scrollbar styling */
 .list::-webkit-scrollbar {
   width: 8px;
 }
@@ -386,7 +384,6 @@ h1 {
   background: var(--text-secondary);
 }
 
-/* Responsive design */
 @media (max-width: 600px) {
   body {
     padding: 1rem;
@@ -414,7 +411,6 @@ h1 {
   }
 }
 
-/* Focus visible for accessibility */
 :focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
