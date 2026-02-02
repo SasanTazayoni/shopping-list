@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import App from "./App";
 import userEvent from "@testing-library/user-event";
@@ -87,6 +87,81 @@ describe("App", () => {
 
     expect(screen.getByText("Bread")).toBeInTheDocument();
     expect(input).toHaveValue("");
+  });
+
+  it("does not add an item when the item is already on the list", async () => {
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup();
+
+    const input = screen.getByPlaceholderText((text) =>
+      text.startsWith("Add an item"),
+    );
+
+    await user.type(input, "Milk");
+
+    await user.click(screen.getByRole("button", { name: "✓" }));
+    const items = screen.getAllByText("Milk");
+    expect(items).toHaveLength(1);
+  });
+
+  it("shows toast for duplicate item that fades and disappears", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup({
+      advanceTimers: (delay) => vi.advanceTimersByTime(delay),
+    });
+
+    const input = screen.getByPlaceholderText((text) =>
+      text.startsWith("Add an item"),
+    );
+
+    await user.type(input, "Milk");
+    await user.click(screen.getByRole("button", { name: "✓" }));
+
+    const toast = screen.getByText(/"Milk" is already in your list/);
+    expect(toast).toBeInTheDocument();
+    expect(toast).not.toHaveClass("fading");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500);
+    });
+
+    expect(toast).toHaveClass("fading");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+
+    expect(screen.queryByText(/"Milk" is already in your list/)).not.toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 
   it("does not add an item when input is empty or whitespace", async () => {
