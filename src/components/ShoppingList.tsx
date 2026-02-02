@@ -34,9 +34,7 @@ export default function ShoppingList({
   function cancelEdit() {
     setEditingId(null);
 
-    if (document.activeElement instanceof HTMLElement) {
-      document.activeElement.blur();
-    }
+    (document.activeElement as HTMLElement | null)?.blur();
   }
 
   return (
