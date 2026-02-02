@@ -40,7 +40,7 @@ export function shoppingListReducer(
         ...state,
         {
           id: crypto.randomUUID(),
-          text: action.payload,
+          text: action.payload.trim(),
           completed: false,
           createdAt: new Date(),
           completedAt: null,
@@ -93,7 +93,11 @@ function App() {
   });
   const [filterText, setFilterText] = useState("");
   const [hideCompleted, setHideCompleted] = useState(false);
+  const [duplicateMessage, setDuplicateMessage] = useState("");
+  const [toastFading, setToastFading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const toastTimeoutRef = useRef<number | null>(null);
+  const toastFadeTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
@@ -118,8 +122,26 @@ function App() {
   });
 
   function addListItem() {
-    const value = inputRef.current?.value.trim();
+    const value = inputRef.current?.value?.trim();
     if (!value) return;
+
+    const itemExists = shoppingList.some(
+      (item) => item.text.toLowerCase() === value.toLowerCase(),
+    );
+
+    if (itemExists) {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+      if (toastFadeTimeoutRef.current) clearTimeout(toastFadeTimeoutRef.current);
+
+      setDuplicateMessage(`"${value}" is already in your list`);
+      setToastFading(false);
+      toastTimeoutRef.current = setTimeout(() => {
+        setToastFading(true);
+        toastFadeTimeoutRef.current = setTimeout(() => setDuplicateMessage(""), 500);
+      }, 2500);
+      return;
+    }
+
     dispatch({ type: "ADD_ITEM", payload: value });
     inputRef.current!.value = "";
   }
@@ -186,6 +208,10 @@ function App() {
         editItem={editItem}
         formatDate={formatDate}
       />
+
+      {duplicateMessage && (
+        <div className={`toast${toastFading ? " fading" : ""}`}>{duplicateMessage}</div>
+      )}
     </div>
   );
 }
