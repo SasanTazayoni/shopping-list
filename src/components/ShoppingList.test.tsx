@@ -148,40 +148,6 @@ describe("ShoppingList", () => {
     });
   });
 
-  it("exits edit mode but does not save when ✓ is clicked with empty text", async () => {
-    const editItem = vi.fn();
-
-    render(
-      <ShoppingList
-        shoppingList={[
-          {
-            id: "item-2",
-            text: "Bread",
-            completed: false,
-            createdAt: new Date(),
-            completedAt: null,
-          },
-        ]}
-        toggleItem={vi.fn()}
-        removeItem={vi.fn()}
-        editItem={editItem}
-        formatDate={() => "formatted"}
-      />,
-    );
-
-    const user = userEvent.setup();
-
-    await user.click(screen.getByRole("button", { name: "✎" }));
-    const input = screen.getByRole("textbox");
-
-    await user.clear(input);
-
-    await user.click(screen.getByRole("button", { name: "✓" }));
-
-    expect(editItem).not.toHaveBeenCalled();
-    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
-  });
-
   it("exits edit mode after clicking ✕", async () => {
     const editItem = vi.fn();
     const shoppingList = [

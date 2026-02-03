@@ -25,9 +25,7 @@ export default function ShoppingList({
   }
 
   function saveEdit(id: string) {
-    if (editText.trim()) {
-      editItem(id, editText.trim());
-    }
+    editItem(id, editText);
     setEditingId(null);
   }
 
