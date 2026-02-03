@@ -131,13 +131,17 @@ function App() {
 
     if (itemExists) {
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
-      if (toastFadeTimeoutRef.current) clearTimeout(toastFadeTimeoutRef.current);
+      if (toastFadeTimeoutRef.current)
+        clearTimeout(toastFadeTimeoutRef.current);
 
       setDuplicateMessage(`"${value}" is already in your list`);
       setToastFading(false);
       toastTimeoutRef.current = setTimeout(() => {
         setToastFading(true);
-        toastFadeTimeoutRef.current = setTimeout(() => setDuplicateMessage(""), 500);
+        toastFadeTimeoutRef.current = setTimeout(
+          () => setDuplicateMessage(""),
+          500,
+        );
       }, 2500);
       return;
     }
@@ -161,7 +165,32 @@ function App() {
   }
 
   function editItem(id: string, newText: string) {
-    dispatch({ type: "EDIT_ITEM", payload: { id, text: newText } });
+    const trimmedText = newText.trim();
+    if (!trimmedText) return;
+
+    const itemExists = shoppingList.some(
+      (item) =>
+        item.id !== id && item.text.toLowerCase() === trimmedText.toLowerCase(),
+    );
+
+    if (itemExists) {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+      if (toastFadeTimeoutRef.current)
+        clearTimeout(toastFadeTimeoutRef.current);
+
+      setDuplicateMessage(`"${trimmedText}" is already in your list`);
+      setToastFading(false);
+      toastTimeoutRef.current = setTimeout(() => {
+        setToastFading(true);
+        toastFadeTimeoutRef.current = setTimeout(
+          () => setDuplicateMessage(""),
+          500,
+        );
+      }, 2500);
+      return;
+    }
+
+    dispatch({ type: "EDIT_ITEM", payload: { id, text: trimmedText } });
   }
 
   function sortShoppingList() {
@@ -210,7 +239,9 @@ function App() {
       />
 
       {duplicateMessage && (
-        <div className={`toast${toastFading ? " fading" : ""}`}>{duplicateMessage}</div>
+        <div className={`toast${toastFading ? " fading" : ""}`}>
+          {duplicateMessage}
+        </div>
       )}
     </div>
   );
