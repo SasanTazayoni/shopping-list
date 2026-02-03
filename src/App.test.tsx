@@ -117,7 +117,133 @@ describe("App", () => {
     expect(items).toHaveLength(1);
   });
 
-  it("shows toast for duplicate item that fades and disappears", async () => {
+  it("does not change an item when editing to empty or whitespace", async () => {
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+    const user = userEvent.setup();
+
+    const editButton = screen.getByRole("button", { name: "✎" });
+    await user.click(editButton);
+
+    const editInput = screen.getByDisplayValue("Milk");
+    expect(editInput).toHaveFocus();
+
+    await user.clear(editInput);
+    await user.keyboard("{Enter}");
+    expect(screen.getByText("Milk")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "✎" }));
+    const editInputAgain = screen.getByDisplayValue("Milk");
+    await user.clear(editInputAgain);
+    await user.type(editInputAgain, "   {Enter}");
+
+    expect(screen.getByText("Milk")).toBeInTheDocument();
+  });
+
+  it("does not edit an item to an that exists already on the list", async () => {
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-2",
+        text: "Bread",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getAllByRole("button", { name: "✎" })[1]);
+
+    const editInput = screen.getByDisplayValue("Bread");
+    expect(editInput).toBeInTheDocument();
+    expect(editInput).toHaveFocus();
+
+    await user.clear(editInput);
+    await user.type(editInput, "Milk{Enter}");
+
+    expect(screen.getByText("Bread")).toBeInTheDocument();
+    expect(screen.getAllByText("Milk")).toHaveLength(1);
+  });
+
+  it("shows toast for duplicate item when editing that fades and disappears", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-2",
+        text: "Bread",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup({
+      advanceTimers: (delay) => vi.advanceTimersByTime(delay),
+    });
+
+    await user.click(screen.getAllByRole("button", { name: "✎" })[1]);
+
+    const editInput = screen.getByDisplayValue("Bread");
+    await user.clear(editInput);
+    await user.type(editInput, "Milk{Enter}");
+
+    const toast = screen.getByText(/"Milk" is already in your list/);
+    expect(toast).toBeInTheDocument();
+    expect(toast).not.toHaveClass("fading");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2500);
+    });
+
+    expect(toast).toHaveClass("fading");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(500);
+    });
+
+    expect(
+      screen.queryByText(/"Milk" is already in your list/),
+    ).not.toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("shows toast for duplicate item when adding that fades and disappears", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
 
     const seeded = [
@@ -159,7 +285,136 @@ describe("App", () => {
       await vi.advanceTimersByTimeAsync(500);
     });
 
-    expect(screen.queryByText(/"Milk" is already in your list/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/"Milk" is already in your list/),
+    ).not.toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
+
+  it("clears previous toast when a new duplicate is detected", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-2",
+        text: "Bread",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup({
+      advanceTimers: (delay) => vi.advanceTimersByTime(delay),
+    });
+
+    const input = screen.getByPlaceholderText((text) =>
+      text.startsWith("Add an item"),
+    );
+
+    await user.type(input, "Milk");
+    await user.click(screen.getByRole("button", { name: "✓" }));
+
+    const firstToast = screen.getByText(/"Milk" is already in your list/);
+    expect(firstToast).toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2700);
+    });
+
+    expect(firstToast).toBeInTheDocument();
+    expect(firstToast).toHaveClass("fading");
+
+    await user.clear(input);
+    await user.type(input, "Bread");
+    await user.click(screen.getByRole("button", { name: "✓" }));
+
+    expect(
+      screen.queryByText(/"Milk" is already in your list/),
+    ).not.toBeInTheDocument();
+
+    const secondToast = screen.getByText(/"Bread" is already in your list/);
+    expect(secondToast).toBeInTheDocument();
+    expect(secondToast).not.toHaveClass("fading");
+
+    vi.useRealTimers();
+  });
+
+  it("clears previous toast when editing to a duplicate while toast is fading", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+
+    const seeded = [
+      {
+        id: "test-id-1",
+        text: "Milk",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-2",
+        text: "Bread",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+      {
+        id: "test-id-3",
+        text: "Eggs",
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    ];
+
+    localStorage.setItem("shoppingList", JSON.stringify(seeded));
+
+    render(<App />);
+
+    const user = userEvent.setup({
+      advanceTimers: (delay) => vi.advanceTimersByTime(delay),
+    });
+
+    const input = screen.getByPlaceholderText((text) =>
+      text.startsWith("Add an item"),
+    );
+
+    await user.type(input, "Milk");
+    await user.click(screen.getByRole("button", { name: "✓" }));
+
+    const firstToast = screen.getByText(/"Milk" is already in your list/);
+    expect(firstToast).toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2700);
+    });
+
+    expect(firstToast).toHaveClass("fading");
+
+    await user.click(screen.getAllByRole("button", { name: "✎" })[2]);
+    const editInput = screen.getByDisplayValue("Eggs");
+    await user.clear(editInput);
+    await user.type(editInput, "Bread{Enter}");
+
+    expect(
+      screen.queryByText(/"Milk" is already in your list/),
+    ).not.toBeInTheDocument();
+
+    const secondToast = screen.getByText(/"Bread" is already in your list/);
+    expect(secondToast).toBeInTheDocument();
+    expect(secondToast).not.toHaveClass("fading");
 
     vi.useRealTimers();
   });
