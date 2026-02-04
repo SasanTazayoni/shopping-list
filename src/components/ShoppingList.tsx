@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { TodoItem } from "../App";
+import { formatDate } from "../utils/formatDate";
 
 type ShoppingListProps = {
   shoppingList: TodoItem[];
   toggleItem: (id: string) => void;
   removeItem: (id: string) => void;
   editItem: (id: string, newText: string) => void;
-  formatDate: (date: Date | null) => string;
 };
 
 export default function ShoppingList({
@@ -14,7 +14,6 @@ export default function ShoppingList({
   toggleItem,
   removeItem,
   editItem,
-  formatDate,
 }: ShoppingListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
