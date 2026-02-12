@@ -37,6 +37,10 @@ export default function Controls({
         step={1}
         aria-label="Quantity"
         disabled={newItemText.trim() === ""}
+        onInput={(e) => {
+          const input = e.currentTarget;
+          if (input.valueAsNumber < 1) input.value = "1";
+        }}
       />
 
       <button onClick={addListItem} disabled={newItemText.trim() === ""}>
