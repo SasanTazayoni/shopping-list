@@ -129,7 +129,7 @@ function App() {
     const value = newItemText.trim();
     if (!value) return;
 
-    const quantity = quantityRef.current?.valueAsNumber ?? 1;
+    const quantity = quantityRef.current!.valueAsNumber;
 
     const itemExists = shoppingList.some(
       (item) => item.text.toLowerCase() === value.toLowerCase(),
@@ -150,7 +150,7 @@ function App() {
 
     setNewItemText("");
 
-    if (quantityRef.current) quantityRef.current.value = "";
+    quantityRef.current!.value = "";
   }
 
   function addListItemKeyboard(e: React.KeyboardEvent<HTMLInputElement>) {
