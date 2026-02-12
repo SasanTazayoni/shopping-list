@@ -6,11 +6,15 @@ import userEvent from "@testing-library/user-event";
 
 describe("Controls", () => {
   const inputRef = { current: null };
+  const quantityRef = { current: null };
 
   it("renders input and buttons", () => {
     render(
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText=""
+        setNewItemText={vi.fn()}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
@@ -19,10 +23,12 @@ describe("Controls", () => {
     );
 
     const input = screen.getByPlaceholderText("Add an item...");
+    const quantityInput = screen.getByLabelText("Quantity");
     const addButton = screen.getByRole("button", { name: "✓" });
     const sortButton = screen.getByRole("button", { name: "A→Z" });
 
     expect(input).toBeInTheDocument();
+    expect(quantityInput).toBeInTheDocument();
     expect(addButton).toBeInTheDocument();
     expect(sortButton).toBeInTheDocument();
   });
@@ -33,6 +39,9 @@ describe("Controls", () => {
     render(
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText="milk"
+        setNewItemText={vi.fn()}
         addListItem={addListItem}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
@@ -53,6 +62,9 @@ describe("Controls", () => {
     render(
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText=""
+        setNewItemText={vi.fn()}
         addListItem={vi.fn()}
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={vi.fn()}
@@ -73,6 +85,9 @@ describe("Controls", () => {
     render(
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText=""
+        setNewItemText={vi.fn()}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={sortShoppingList}
@@ -91,6 +106,9 @@ describe("Controls", () => {
     render(
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText=""
+        setNewItemText={vi.fn()}
         addListItem={vi.fn()}
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}

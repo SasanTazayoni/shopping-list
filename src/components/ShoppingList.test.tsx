@@ -10,6 +10,7 @@ describe("ShoppingList", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 3,
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
@@ -17,9 +18,18 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 2,
         completed: true,
         createdAt: new Date("2024-01-02"),
         completedAt: new Date("2024-01-03"),
+      },
+      {
+        id: "item-3",
+        text: "Apple",
+        quantity: 1,
+        completed: true,
+        createdAt: new Date("2024-01-02"),
+        completedAt: new Date("2024-01-06"),
       },
     ];
 
@@ -29,12 +39,12 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
-    expect(screen.getByText("Milk")).toBeInTheDocument();
-    expect(screen.getByText("Bread")).toBeInTheDocument();
+    expect(screen.getByText("Milk (3)")).toBeInTheDocument();
+    expect(screen.getByText("Bread (2)")).toBeInTheDocument();
+    expect(screen.getByText("Apple")).toBeInTheDocument();
   });
 
   it("calls toggleItem with correct id when checkbox is clicked", async () => {
@@ -43,6 +53,7 @@ describe("ShoppingList", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
@@ -50,6 +61,7 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-02"),
         completedAt: null,
@@ -62,7 +74,6 @@ describe("ShoppingList", () => {
         toggleItem={toggleItem}
         removeItem={vi.fn()}
         editItem={vi.fn()}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
@@ -79,6 +90,7 @@ describe("ShoppingList", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
@@ -86,6 +98,7 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-02"),
         completedAt: null,
@@ -98,7 +111,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={vi.fn()}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
@@ -116,6 +128,7 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-02"),
         completedAt: null,
@@ -128,7 +141,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
@@ -154,6 +166,7 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-02"),
         completedAt: null,
@@ -166,7 +179,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
@@ -189,6 +201,7 @@ describe("ShoppingList", () => {
           {
             id: "item-2",
             text: "Bread",
+            quantity: 1,
             completed: false,
             createdAt: new Date(),
             completedAt: null,
@@ -197,7 +210,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
-        formatDate={() => "formatted"}
       />,
     );
 
@@ -227,6 +239,7 @@ describe("ShoppingList", () => {
           {
             id: "item-2",
             text: "Bread",
+            quantity: 1,
             completed: false,
             createdAt: new Date("2024-01-02"),
             completedAt: null,
@@ -235,7 +248,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={editItem}
-        formatDate={() => "formatted date"}
       />,
     );
 
@@ -264,6 +276,7 @@ describe("ShoppingList", () => {
           {
             id: "item-2",
             text: "Bread",
+            quantity: 1,
             completed: false,
             createdAt: new Date("2024-01-02"),
             completedAt: null,
@@ -272,7 +285,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={editItem}
-        formatDate={() => "formatted date"}
       />,
     );
 
@@ -295,6 +307,7 @@ describe("ShoppingList", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: false,
         createdAt: new Date("2024-01-01"),
         completedAt: null,
@@ -302,6 +315,7 @@ describe("ShoppingList", () => {
       {
         id: "item-2",
         text: "Bread",
+        quantity: 1,
         completed: true,
         createdAt: new Date("2024-01-02"),
         completedAt: new Date("2024-01-03"),
@@ -314,7 +328,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
-        formatDate={vi.fn(() => "formatted date")}
       />,
     );
 
@@ -333,7 +346,6 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
-        formatDate={vi.fn()}
       />,
     );
 

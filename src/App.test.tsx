@@ -62,17 +62,22 @@ describe("App", () => {
   it("adds a new item and clears the input", async () => {
     render(<App />);
 
+    const user = userEvent.setup();
+
     const input = screen.getByPlaceholderText((text) =>
       text.startsWith("Add an item"),
     );
-    const addButton = screen.getByRole("button", { name: "✓" });
-    const user = userEvent.setup();
+
+    const quantityInput = screen.getByRole("spinbutton");
 
     await user.type(input, "Eggs");
-    await user.click(addButton);
+    await user.type(quantityInput, "3");
 
-    expect(screen.getByText("Eggs")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "✓" }));
+
+    expect(screen.getByText("Eggs (3)")).toBeInTheDocument();
     expect(input).toHaveValue("");
+    expect(quantityInput).toHaveDisplayValue("");
   });
 
   it("adds a new item when pressing Enter in the input", async () => {
@@ -320,11 +325,11 @@ describe("App", () => {
     const user = userEvent.setup();
 
     const input = screen.getByPlaceholderText(/add an item/i);
-    const addButton = screen.getByRole("button", { name: "✓" });
 
-    await user.click(addButton);
-    await user.type(input, "   ");
-    await user.click(addButton);
+    await user.type(input, "{Enter}");
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+
+    await user.type(input, "   {Enter}");
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 
@@ -533,6 +538,7 @@ describe("App", () => {
       {
         id: "test-id-123",
         text: "Milk",
+        quantity: 1,
         completed: false,
         createdAt: new Date(),
         completedAt: null,

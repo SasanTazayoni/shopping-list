@@ -9,6 +9,7 @@ describe("toggleItemById", () => {
       {
         id: "item-1",
         text: "Item 1",
+        quantity: 1,
         completed: false,
         createdAt: new Date(),
         completedAt: null,
@@ -16,6 +17,7 @@ describe("toggleItemById", () => {
       {
         id: "item-2",
         text: "Item 2",
+        quantity: 1,
         completed: false,
         createdAt: new Date(),
         completedAt: null,
@@ -35,6 +37,7 @@ describe("toggleItemById", () => {
       {
         id: "item-1",
         text: "Item 1",
+        quantity: 1,
         completed: true,
         createdAt: new Date(),
         completedAt: new Date("2026-01-01T10:00:00.000Z"),
@@ -42,6 +45,7 @@ describe("toggleItemById", () => {
       {
         id: "item-2",
         text: "Item 2",
+        quantity: 1,
         completed: false,
         createdAt: new Date(),
         completedAt: null,
@@ -64,6 +68,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: true,
         createdAt: now,
         completedAt: new Date("2026-01-01T09:30:00.000Z"),
@@ -71,6 +76,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-2",
         text: "Eggs",
+        quantity: 1,
         completed: true,
         createdAt: now,
         completedAt: new Date("2026-01-01T09:45:00.000Z"),
@@ -90,6 +96,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: false,
         createdAt: now,
         completedAt: null,
@@ -97,6 +104,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-2",
         text: "Eggs",
+        quantity: 1,
         completed: false,
         createdAt: now,
         completedAt: null,
@@ -118,6 +126,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-1",
         text: "Milk",
+        quantity: 1,
         completed: true,
         createdAt: earlier,
         completedAt: earlier,
@@ -125,6 +134,7 @@ describe("toggleAllItems", () => {
       {
         id: "item-2",
         text: "Eggs",
+        quantity: 1,
         completed: false,
         createdAt: earlier,
         completedAt: null,

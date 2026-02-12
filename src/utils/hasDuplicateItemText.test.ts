@@ -10,9 +10,9 @@ describe("hasDuplicateItemText", () => {
   };
 
   const items: TodoItem[] = [
-    { ...baseItem, id: "1", text: "Milk" },
-    { ...baseItem, id: "2", text: "Bread" },
-    { ...baseItem, id: "3", text: "Eggs" },
+    { ...baseItem, id: "1", text: "Milk", quantity: 1 },
+    { ...baseItem, id: "2", text: "Bread", quantity: 2 },
+    { ...baseItem, id: "3", text: "Eggs", quantity: 12 },
   ];
 
   it("returns true when text already exists (case-insensitive)", () => {
