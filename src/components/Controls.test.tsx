@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Controls from "./Controls";
 import userEvent from "@testing-library/user-event";
@@ -118,5 +118,28 @@ describe("Controls", () => {
 
     const sortButton = screen.getByRole("button", { name: "Z→A" });
     expect(sortButton).toBeInTheDocument();
+  });
+
+  it("clamps quantity input to 1 when a value below 1 is entered", () => {
+    render(
+      <Controls
+        inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText="milk"
+        setNewItemText={vi.fn()}
+        addListItem={vi.fn()}
+        addListItemKeyboard={vi.fn()}
+        sortShoppingList={vi.fn()}
+        sortOrder="asc"
+      />,
+    );
+
+    const quantityInput = screen.getByLabelText("Quantity") as HTMLInputElement;
+
+    fireEvent.input(quantityInput, { target: { value: "0" } });
+    expect(quantityInput.value).toBe("1");
+
+    fireEvent.input(quantityInput, { target: { value: "-5" } });
+    expect(quantityInput.value).toBe("1");
   });
 });

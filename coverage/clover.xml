@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1770919148954" clover="3.2.0">
+  <project timestamp="1770919148954" name="All files">
+    <metrics statements="118" coveredstatements="118" conditionals="86" coveredconditionals="86" methods="57" coveredmethods="57" elements="261" coveredelements="261" complexity="0" loc="118" ncloc="118" packages="5" files="10" classes="10"/>
+    <package name="src">
+      <metrics statements="56" coveredstatements="56" conditionals="44" coveredconditionals="44" methods="21" coveredmethods="21"/>
+      <file name="App.tsx" path="C:\Users\sasan\Desktop\my-inventory\src\App.tsx">
+        <metrics statements="56" coveredstatements="56" conditionals="44" coveredconditionals="44" methods="21" coveredmethods="21"/>
+        <line num="42" count="9" type="cond" truecount="6" falsecount="0"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="77" count="1" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
+        <line num="84" count="71" type="stmt"/>
+        <line num="85" count="71" type="stmt"/>
+        <line num="86" count="16" type="stmt"/>
+        <line num="87" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="88" count="12" type="stmt"/>
+        <line num="89" count="19" type="stmt"/>
+        <line num="98" count="71" type="stmt"/>
+        <line num="99" count="71" type="stmt"/>
+        <line num="100" count="71" type="stmt"/>
+        <line num="101" count="71" type="stmt"/>
+        <line num="102" count="71" type="stmt"/>
+        <line num="104" count="71" type="stmt"/>
+        <line num="106" count="71" type="stmt"/>
+        <line num="107" count="29" type="stmt"/>
+        <line num="116" count="24" type="stmt"/>
+        <line num="119" count="71" type="stmt"/>
+        <line num="121" count="79" type="stmt"/>
+        <line num="125" count="79" type="cond" truecount="2" falsecount="0"/>
+        <line num="127" count="79" type="cond" truecount="2" falsecount="0"/>
+        <line num="130" count="28" type="cond" truecount="2" falsecount="0"/>
+        <line num="136" count="9" type="stmt"/>
+        <line num="137" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="139" count="7" type="stmt"/>
+        <line num="141" count="7" type="stmt"/>
+        <line num="142" count="5" type="stmt"/>
+        <line num="145" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="146" count="4" type="stmt"/>
+        <line num="147" count="4" type="stmt"/>
+        <line num="150" count="3" type="stmt"/>
+        <line num="158" count="3" type="stmt"/>
+        <line num="160" count="3" type="stmt"/>
+        <line num="164" count="36" type="cond" truecount="2" falsecount="0"/>
+        <line num="165" count="3" type="stmt"/>
+        <line num="170" count="1" type="stmt"/>
+        <line num="174" count="1" type="stmt"/>
+        <line num="178" count="4" type="stmt"/>
+        <line num="179" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="181" count="2" type="stmt"/>
+        <line num="183" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="186" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="187" count="1" type="stmt"/>
+        <line num="188" count="1" type="stmt"/>
+        <line num="191" count="1" type="stmt"/>
+        <line num="198" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="202" count="2" type="stmt"/>
+        <line num="206" count="71" type="cond" truecount="2" falsecount="0"/>
+        <line num="208" count="71" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.components">
+      <metrics statements="31" coveredstatements="31" conditionals="18" coveredconditionals="18" methods="23" coveredmethods="23"/>
+      <file name="Controls.tsx" path="C:\Users\sasan\Desktop\my-inventory\src\components\Controls.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="4" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <line num="22" count="77" type="stmt"/>
+        <line num="28" count="34" type="stmt"/>
+        <line num="41" count="3" type="stmt"/>
+        <line num="42" count="3" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="FilterForm.tsx" path="C:\Users\sasan\Desktop\my-inventory\src\components\FilterForm.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="14" count="75" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+      </file>
+      <file name="ShoppingList.tsx" path="C:\Users\sasan\Desktop\my-inventory\src\components\ShoppingList.tsx">
+        <metrics statements="23" coveredstatements="23" conditionals="14" coveredconditionals="14" methods="16" coveredmethods="16"/>
+        <line num="18" count="134" type="stmt"/>
+        <line num="19" count="134" type="stmt"/>
+        <line num="20" count="134" type="stmt"/>
+        <line num="27" count="12" type="stmt"/>
+        <line num="28" count="12" type="stmt"/>
+        <line num="29" count="12" type="stmt"/>
+        <line num="33" count="8" type="stmt"/>
+        <line num="34" count="8" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="47" count="26" type="cond" truecount="2" falsecount="0"/>
+        <line num="48" count="26" type="cond" truecount="2" falsecount="0"/>
+        <line num="52" count="2" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="59" count="134" type="stmt"/>
+        <line num="62" count="154" type="stmt"/>
+        <line num="64" count="154" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="79" count="25" type="stmt"/>
+        <line num="80" count="26" type="stmt"/>
+        <line num="96" count="3" type="stmt"/>
+        <line num="103" count="12" type="stmt"/>
+        <line num="113" count="4" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="ToggleAll.tsx" path="C:\Users\sasan\Desktop\my-inventory\src\components\ToggleAll.tsx">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="7" count="75" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.css">
+      <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="styles.css" path="C:\Users\sasan\Desktop\my-inventory\src\css\styles.css">
+        <metrics statements="0" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      </file>
+    </package>
+    <package name="src.hooks">
+      <metrics statements="17" coveredstatements="17" conditionals="10" coveredconditionals="10" methods="6" coveredmethods="6"/>
+      <file name="useToast.ts" path="C:\Users\sasan\Desktop\my-inventory\src\hooks\useToast.ts">
+        <metrics statements="17" coveredstatements="17" conditionals="10" coveredconditionals="10" methods="6" coveredmethods="6"/>
+        <line num="4" count="85" type="stmt"/>
+        <line num="5" count="85" type="stmt"/>
+        <line num="7" count="85" type="stmt"/>
+        <line num="8" count="85" type="stmt"/>
+        <line num="10" count="85" type="stmt"/>
+        <line num="11" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="14" count="10" type="stmt"/>
+        <line num="15" count="10" type="stmt"/>
+        <line num="17" count="10" type="stmt"/>
+        <line num="18" count="5" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="23" count="85" type="stmt"/>
+        <line num="24" count="21" type="stmt"/>
+        <line num="25" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="21" type="cond" truecount="2" falsecount="0"/>
+        <line num="30" count="85" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utils">
+      <metrics statements="14" coveredstatements="14" conditionals="14" coveredconditionals="14" methods="7" coveredmethods="7"/>
+      <file name="formatDate.ts" path="C:\Users\sasan\Desktop\my-inventory\src\utils\formatDate.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="2" count="310" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="hasDuplicateItemText.ts" path="C:\Users\sasan\Desktop\my-inventory\src\utils\hasDuplicateItemText.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="8" count="7" type="stmt"/>
+        <line num="9" count="7" type="stmt"/>
+        <line num="11" count="12" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="shoppingListLogic.ts" path="C:\Users\sasan\Desktop\my-inventory\src\utils\shoppingListLogic.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="8" coveredconditionals="8" methods="4" coveredmethods="4"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="26" count="5" type="stmt"/>
+        <line num="27" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="31" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="35" count="5" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

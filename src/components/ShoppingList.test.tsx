@@ -156,7 +156,7 @@ describe("ShoppingList", () => {
     expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "✎" })).toBeInTheDocument();
     await waitFor(() => {
-      expect(editItem).toHaveBeenCalledWith("item-2", "asdf");
+      expect(editItem).toHaveBeenCalledWith("item-2", "asdf", 1);
     });
   });
 
@@ -337,6 +337,104 @@ describe("ShoppingList", () => {
 
     expect(screen.getByText("Milk")).not.toHaveClass("completed");
     expect(screen.getByText("Bread")).toHaveClass("completed");
+  });
+
+  it("increments quantity when + is clicked in edit mode", async () => {
+    const editItem = vi.fn();
+
+    render(
+      <ShoppingList
+        shoppingList={[
+          {
+            id: "item-1",
+            text: "Milk",
+            quantity: 2,
+            completed: false,
+            createdAt: new Date("2024-01-01"),
+            completedAt: null,
+          },
+        ]}
+        toggleItem={vi.fn()}
+        removeItem={vi.fn()}
+        editItem={editItem}
+      />,
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "✎" }));
+
+    expect(screen.getByText("2")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "+" }));
+    expect(screen.getByText("3")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "+" }));
+    expect(screen.getByText("4")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "✓" }));
+    expect(editItem).toHaveBeenCalledWith("item-1", "Milk", 4);
+  });
+
+  it("decrements quantity when - is clicked in edit mode", async () => {
+    const editItem = vi.fn();
+
+    render(
+      <ShoppingList
+        shoppingList={[
+          {
+            id: "item-1",
+            text: "Milk",
+            quantity: 3,
+            completed: false,
+            createdAt: new Date("2024-01-01"),
+            completedAt: null,
+          },
+        ]}
+        toggleItem={vi.fn()}
+        removeItem={vi.fn()}
+        editItem={editItem}
+      />,
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "✎" }));
+
+    expect(screen.getByText("3")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "−" }));
+    expect(screen.getByText("2")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "✓" }));
+    expect(editItem).toHaveBeenCalledWith("item-1", "Milk", 2);
+  });
+
+  it("does not decrement quantity below 1", async () => {
+    render(
+      <ShoppingList
+        shoppingList={[
+          {
+            id: "item-1",
+            text: "Milk",
+            quantity: 1,
+            completed: false,
+            createdAt: new Date("2024-01-01"),
+            completedAt: null,
+          },
+        ]}
+        toggleItem={vi.fn()}
+        removeItem={vi.fn()}
+        editItem={vi.fn()}
+      />,
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "✎" }));
+
+    await user.click(screen.getByRole("button", { name: "−" }));
+    await user.click(screen.getByRole("button", { name: "−" }));
+    await user.click(screen.getByRole("button", { name: "−" }));
+
+    expect(screen.getByText("1")).toBeInTheDocument();
   });
 
   it("renders empty list when no items", () => {
