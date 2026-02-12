@@ -28,7 +28,10 @@ type StoredTodoItem = {
 export type ShoppingListAction =
   | { type: "ADD_ITEM"; payload: { text: string; quantity: number } }
   | { type: "REMOVE_ITEM"; payload: string }
-  | { type: "EDIT_ITEM"; payload: { id: string; text: string } }
+  | {
+      type: "EDIT_ITEM";
+      payload: { id: string; text: string; quantity: number };
+    }
   | { type: "TOGGLE_ITEM"; payload: string }
   | { type: "TOGGLE_ALL"; payload: boolean };
 
@@ -62,7 +65,11 @@ export function shoppingListReducer(
     case "EDIT_ITEM":
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, text: action.payload.text }
+          ? {
+              ...item,
+              text: action.payload.text,
+              quantity: action.payload.quantity,
+            }
           : item,
       );
 
@@ -167,7 +174,7 @@ function App() {
     dispatch({ type: "REMOVE_ITEM", payload: id });
   }
 
-  function editItem(id: string, newText: string) {
+  function editItem(id: string, newText: string, quantity: number) {
     const trimmedText = newText.trim();
     if (!trimmedText) return;
 
@@ -181,7 +188,10 @@ function App() {
       return;
     }
 
-    dispatch({ type: "EDIT_ITEM", payload: { id, text: trimmedText } });
+    dispatch({
+      type: "EDIT_ITEM",
+      payload: { id, text: trimmedText, quantity },
+    });
   }
 
   function sortShoppingList() {

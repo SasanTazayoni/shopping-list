@@ -351,7 +351,7 @@ h1 {
 
 .edit,
 .delete {
-  background: none;
+  background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text-muted);
@@ -382,6 +382,50 @@ h1 {
 .edit-input:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.quantity-controls button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.quantity-controls button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background: rgba(74, 144, 226, 0.1);
+}
+
+.quantity-controls button:active {
+  transform: scale(0.9);
+}
+
+.quantity-controls span {
+  min-width: 24px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 0;
 }
 
 .edit:hover {
@@ -487,3 +531,4 @@ h1 {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
+
