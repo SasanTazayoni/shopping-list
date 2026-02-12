@@ -60,6 +60,7 @@ export default function ShoppingList({
             ) : (
               <span className={item.completed ? "completed" : ""}>
                 {item.text}
+                {item.quantity > 1 && ` (${item.quantity})`}
               </span>
             )}
 

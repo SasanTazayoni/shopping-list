@@ -10,6 +10,7 @@ import { useToast } from "./hooks/useToast";
 export type TodoItem = {
   id: string;
   text: string;
+  quantity: number;
   completed: boolean;
   createdAt: Date;
   completedAt: Date | null;
@@ -18,13 +19,14 @@ export type TodoItem = {
 type StoredTodoItem = {
   id: string;
   text: string;
+  quantity: number;
   completed: boolean;
   createdAt: string;
   completedAt: string | null;
 };
 
 export type ShoppingListAction =
-  | { type: "ADD_ITEM"; payload: string }
+  | { type: "ADD_ITEM"; payload: { text: string; quantity: number } }
   | { type: "REMOVE_ITEM"; payload: string }
   | { type: "EDIT_ITEM"; payload: { id: string; text: string } }
   | { type: "TOGGLE_ITEM"; payload: string }
@@ -40,7 +42,8 @@ export function shoppingListReducer(
         ...state,
         {
           id: crypto.randomUUID(),
-          text: action.payload.trim(),
+          text: action.payload.text.trim(),
+          quantity: Math.max(1, Math.floor(action.payload.quantity)),
           completed: false,
           createdAt: new Date(),
           completedAt: null,
@@ -79,6 +82,7 @@ function App() {
     return parsed.map((item) => ({
       id: item.id || crypto.randomUUID(),
       text: item.text,
+      quantity: item.quantity ?? 1,
       completed: item.completed,
       createdAt: new Date(item.createdAt),
       completedAt: item.completedAt ? new Date(item.completedAt) : null,
@@ -86,7 +90,9 @@ function App() {
   });
   const [filterText, setFilterText] = useState("");
   const [hideCompleted, setHideCompleted] = useState(false);
+  const [newItemText, setNewItemText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const quantityRef = useRef<HTMLInputElement>(null);
 
   const toast = useToast();
 
@@ -94,6 +100,7 @@ function App() {
     const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
       id: item.id,
       text: item.text,
+      quantity: item.quantity,
       completed: item.completed,
       createdAt: item.createdAt.toISOString(),
       completedAt: item.completedAt ? item.completedAt.toISOString() : null,
@@ -119,8 +126,10 @@ function App() {
     );
 
   function addListItem() {
-    const value = inputRef.current?.value?.trim();
+    const value = newItemText.trim();
     if (!value) return;
+
+    const quantity = quantityRef.current?.valueAsNumber ?? 1;
 
     const itemExists = shoppingList.some(
       (item) => item.text.toLowerCase() === value.toLowerCase(),
@@ -131,8 +140,17 @@ function App() {
       return;
     }
 
-    dispatch({ type: "ADD_ITEM", payload: value });
-    inputRef.current!.value = "";
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {
+        text: value,
+        quantity,
+      },
+    });
+
+    setNewItemText("");
+
+    if (quantityRef.current) quantityRef.current.value = "";
   }
 
   function addListItemKeyboard(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -183,6 +201,9 @@ function App() {
 
       <Controls
         inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText={newItemText}
+        setNewItemText={setNewItemText}
         addListItem={addListItem}
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={sortShoppingList}
