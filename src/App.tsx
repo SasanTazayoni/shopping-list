@@ -183,10 +183,18 @@ function App() {
       return;
     }
 
-    dispatch({
-      type: "EDIT_ITEM",
-      payload: { id, text: trimmedText, quantity },
-    });
+    fetch(`/api/shopping-items/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: trimmedText, quantity }),
+    })
+      .then(() => {
+        dispatch({
+          type: "EDIT_ITEM",
+          payload: { id, text: trimmedText, quantity },
+        });
+      })
+      .catch((err) => console.error("Failed to edit item:", err));
   }
 
   function sortShoppingList() {
