@@ -166,7 +166,13 @@ function App() {
   }
 
   function removeItem(id: string) {
-    dispatch({ type: "REMOVE_ITEM", payload: id });
+    fetch(`/api/shopping-items/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        dispatch({ type: "REMOVE_ITEM", payload: id });
+      })
+      .catch((err) => console.error("Failed to delete item:", err));
   }
 
   function editItem(id: string, newText: string, quantity: number) {
