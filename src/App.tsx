@@ -16,17 +16,10 @@ export type TodoItem = {
   completedAt: Date | null;
 };
 
-type StoredTodoItem = {
-  id: string;
-  text: string;
-  quantity: number;
-  completed: boolean;
-  createdAt: string;
-  completedAt: string | null;
-};
 
 export type ShoppingListAction =
-  | { type: "ADD_ITEM"; payload: { text: string; quantity: number } }
+  | { type: "LOAD_ITEMS"; payload: TodoItem[] }
+  | { type: "ADD_ITEM"; payload: { id: string; text: string; quantity: number } }
   | { type: "REMOVE_ITEM"; payload: string }
   | {
       type: "EDIT_ITEM";
@@ -40,11 +33,14 @@ export function shoppingListReducer(
   action: ShoppingListAction,
 ): TodoItem[] {
   switch (action.type) {
+    case "LOAD_ITEMS":
+      return action.payload;
+
     case "ADD_ITEM":
       return [
         ...state,
         {
-          id: crypto.randomUUID(),
+          id: action.payload.id,
           text: action.payload.text.trim(),
           quantity: Math.max(1, Math.floor(action.payload.quantity)),
           completed: false,
@@ -78,23 +74,9 @@ export function shoppingListReducer(
   }
 }
 
-const STORAGE_KEY = "shoppingList";
-
 function App() {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [shoppingList, dispatch] = useReducer(shoppingListReducer, null, () => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return [];
-    const parsed: StoredTodoItem[] = JSON.parse(stored);
-    return parsed.map((item) => ({
-      id: item.id || crypto.randomUUID(),
-      text: item.text,
-      quantity: item.quantity ?? 1,
-      completed: item.completed,
-      createdAt: new Date(item.createdAt),
-      completedAt: item.completedAt ? new Date(item.completedAt) : null,
-    }));
-  });
+  const [shoppingList, dispatch] = useReducer(shoppingListReducer, []);
   const [filterText, setFilterText] = useState("");
   const [hideCompleted, setHideCompleted] = useState(false);
   const [newItemText, setNewItemText] = useState("");
@@ -104,17 +86,20 @@ function App() {
   const toast = useToast();
 
   useEffect(() => {
-    const toStore: StoredTodoItem[] = shoppingList.map((item) => ({
-      id: item.id,
-      text: item.text,
-      quantity: item.quantity,
-      completed: item.completed,
-      createdAt: item.createdAt.toISOString(),
-      completedAt: item.completedAt ? item.completedAt.toISOString() : null,
-    }));
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
-  }, [shoppingList]);
+    fetch("/api/shopping-items")
+      .then((res) => res.json())
+      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean }>) => {
+        dispatch({
+          type: "LOAD_ITEMS",
+          payload: data.map((item) => ({
+            ...item,
+            createdAt: new Date(),
+            completedAt: null,
+          })),
+        });
+      })
+      .catch((err) => console.error("Failed to load items:", err));
+  }, []);
 
   const filteredList = [...shoppingList]
     .filter((item) => {
@@ -147,13 +132,23 @@ function App() {
       return;
     }
 
-    dispatch({
-      type: "ADD_ITEM",
-      payload: {
-        text: value,
-        quantity,
-      },
-    });
+    fetch("/api/shopping-items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: value, quantity }),
+    })
+      .then((res) => res.json())
+      .then((newItem) => {
+        dispatch({
+          type: "ADD_ITEM",
+          payload: {
+            id: newItem.id,
+            text: newItem.text,
+            quantity: newItem.quantity,
+          },
+        });
+      })
+      .catch((err) => console.error("Failed to add item:", err));
 
     setNewItemText("");
 
