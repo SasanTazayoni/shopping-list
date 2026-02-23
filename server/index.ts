@@ -6,7 +6,7 @@ app.use(express.json());
 
 type ShoppingItem = {
   id: string;
-  name: string;
+  text: string;
   quantity: number;
   completed: boolean;
 };
@@ -20,7 +20,7 @@ app.get("/api/shopping-items", (_req: Request, res: Response) => {
 app.post("/api/shopping-items", (req: Request, res: Response) => {
   const newItem: ShoppingItem = {
     id: crypto.randomUUID(),
-    name: req.body.name,
+    text: req.body.text,
     quantity: req.body.quantity ?? 1,
     completed: false,
   };
@@ -34,7 +34,7 @@ app.put("/api/shopping-items/:id", (req: Request, res: Response) => {
     res.status(404).json({ error: "Item not found" });
     return;
   }
-  item.name = req.body.name ?? item.name;
+  item.text = req.body.text ?? item.text;
   item.quantity = req.body.quantity ?? item.quantity;
   item.completed = req.body.completed ?? item.completed;
   res.json(item);
