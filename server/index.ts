@@ -10,6 +10,7 @@ type ShoppingItem = {
   quantity: number;
   completed: boolean;
   createdAt: string;
+  completedAt: string | null;
 };
 
 let shoppingItems: ShoppingItem[] = [];
@@ -25,6 +26,7 @@ app.post("/api/shopping-items", (req: Request, res: Response) => {
     quantity: req.body.quantity ?? 1,
     completed: false,
     createdAt: new Date().toISOString(),
+    completedAt: null,
   };
   shoppingItems.push(newItem);
   res.status(201).json(newItem);
@@ -38,7 +40,10 @@ app.put("/api/shopping-items/:id", (req: Request, res: Response) => {
   }
   item.text = req.body.text ?? item.text;
   item.quantity = req.body.quantity ?? item.quantity;
-  item.completed = req.body.completed ?? item.completed;
+  if (req.body.completed !== undefined && req.body.completed !== item.completed) {
+    item.completed = req.body.completed;
+    item.completedAt = item.completed ? new Date().toISOString() : null;
+  }
   res.json(item);
 });
 

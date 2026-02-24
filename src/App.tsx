@@ -3,7 +3,7 @@ import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
 import ToggleAll from "./components/ToggleAll";
-import { toggleAllItems, toggleItemById } from "./utils/shoppingListLogic";
+import { toggleAllItems } from "./utils/shoppingListLogic";
 import FilterForm from "./components/FilterForm";
 import { useToast } from "./hooks/useToast";
 
@@ -25,7 +25,7 @@ export type ShoppingListAction =
       type: "EDIT_ITEM";
       payload: { id: string; text: string; quantity: number };
     }
-  | { type: "TOGGLE_ITEM"; payload: string }
+  | { type: "TOGGLE_ITEM"; payload: { id: string; completed: boolean; completedAt: Date | null } }
   | { type: "TOGGLE_ALL"; payload: boolean };
 
 export function shoppingListReducer(
@@ -53,7 +53,11 @@ export function shoppingListReducer(
       return state.filter((item) => item.id !== action.payload);
 
     case "TOGGLE_ITEM":
-      return toggleItemById(state, action.payload, new Date());
+      return state.map((item) =>
+        item.id === action.payload.id
+          ? { ...item, completed: action.payload.completed, completedAt: action.payload.completedAt }
+          : item
+      );
 
     case "TOGGLE_ALL":
       return toggleAllItems(state, action.payload, new Date());
@@ -88,13 +92,13 @@ function App() {
   useEffect(() => {
     fetch("/api/shopping-items")
       .then((res) => res.json())
-      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean; createdAt: string }>) => {
+      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean; createdAt: string; completedAt: string | null }>) => {
         dispatch({
           type: "LOAD_ITEMS",
           payload: data.map((item) => ({
             ...item,
             createdAt: new Date(item.createdAt),
-            completedAt: null,
+            completedAt: item.completedAt ? new Date(item.completedAt) : null,
           })),
         });
       })
@@ -163,7 +167,26 @@ function App() {
   }
 
   function toggleItem(id: string) {
-    dispatch({ type: "TOGGLE_ITEM", payload: id });
+    const item = shoppingList.find((listItem) => listItem.id === id);
+    if (!item) return;
+
+    fetch(`/api/shopping-items/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !item.completed }),
+    })
+      .then((res) => res.json())
+      .then((updated) => {
+        dispatch({
+          type: "TOGGLE_ITEM",
+          payload: {
+            id,
+            completed: updated.completed,
+            completedAt: updated.completedAt ? new Date(updated.completedAt) : null,
+          },
+        });
+      })
+      .catch((err) => console.error("Failed to toggle item:", err));
   }
 
   function removeItem(id: string) {
