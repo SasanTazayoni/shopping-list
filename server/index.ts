@@ -9,6 +9,7 @@ type ShoppingItem = {
   text: string;
   quantity: number;
   completed: boolean;
+  createdAt: string;
 };
 
 let shoppingItems: ShoppingItem[] = [];
@@ -23,6 +24,7 @@ app.post("/api/shopping-items", (req: Request, res: Response) => {
     text: req.body.text,
     quantity: req.body.quantity ?? 1,
     completed: false,
+    createdAt: new Date().toISOString(),
   };
   shoppingItems.push(newItem);
   res.status(201).json(newItem);

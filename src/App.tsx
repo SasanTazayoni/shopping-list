@@ -19,7 +19,7 @@ export type TodoItem = {
 
 export type ShoppingListAction =
   | { type: "LOAD_ITEMS"; payload: TodoItem[] }
-  | { type: "ADD_ITEM"; payload: { id: string; text: string; quantity: number } }
+  | { type: "ADD_ITEM"; payload: { id: string; text: string; quantity: number; createdAt: Date } }
   | { type: "REMOVE_ITEM"; payload: string }
   | {
       type: "EDIT_ITEM";
@@ -44,7 +44,7 @@ export function shoppingListReducer(
           text: action.payload.text.trim(),
           quantity: Math.max(1, Math.floor(action.payload.quantity)),
           completed: false,
-          createdAt: new Date(),
+          createdAt: action.payload.createdAt,
           completedAt: null,
         },
       ];
@@ -88,12 +88,12 @@ function App() {
   useEffect(() => {
     fetch("/api/shopping-items")
       .then((res) => res.json())
-      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean }>) => {
+      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean; createdAt: string }>) => {
         dispatch({
           type: "LOAD_ITEMS",
           payload: data.map((item) => ({
             ...item,
-            createdAt: new Date(),
+            createdAt: new Date(item.createdAt),
             completedAt: null,
           })),
         });
@@ -145,6 +145,7 @@ function App() {
             id: newItem.id,
             text: newItem.text,
             quantity: newItem.quantity,
+            createdAt: new Date(newItem.createdAt),
           },
         });
       })
