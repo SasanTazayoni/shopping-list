@@ -25,6 +25,13 @@ A full-stack shopping list app built with React (frontend) and Express (backend)
 
 ## Getting Started
 
+**Clone the repository:**
+```bash
+git clone https://github.com/your-username/my-inventory.git
+cd my-inventory
+npm install
+```
+
 You need two terminals running at the same time:
 
 **Terminal 1 — Start the API server:**
@@ -37,7 +44,7 @@ npm run server
 npm run dev
 ```
 
-Then open [http://localhost:5173/shopping-list/](http://localhost:5173/shopping-list/) in your browser.
+Then open `http://localhost:5173/shopping-list/` in your browser.
 
 ## API Endpoints
 
