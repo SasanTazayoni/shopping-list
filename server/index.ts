@@ -33,7 +33,7 @@ app.post("/api/shopping-items", (req: Request, res: Response) => {
 });
 
 app.put("/api/shopping-items/:id", (req: Request, res: Response) => {
-  const item = shoppingItems.find((i) => i.id === req.params.id);
+  const item = shoppingItems.find((shoppingItem) => shoppingItem.id === req.params.id);
   if (!item) {
     res.status(404).json({ error: "Item not found" });
     return;
@@ -48,7 +48,7 @@ app.put("/api/shopping-items/:id", (req: Request, res: Response) => {
 });
 
 app.delete("/api/shopping-items/:id", (req: Request, res: Response) => {
-  const index = shoppingItems.findIndex((i) => i.id === req.params.id);
+  const index = shoppingItems.findIndex((shoppingItem) => shoppingItem.id === req.params.id);
   if (index === -1) {
     res.status(404).json({ error: "Item not found" });
     return;
