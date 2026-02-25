@@ -3,7 +3,6 @@ import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
 import ToggleAll from "./components/ToggleAll";
-import { toggleAllItems } from "./utils/shoppingListLogic";
 import FilterForm from "./components/FilterForm";
 import { useToast } from "./hooks/useToast";
 
@@ -16,17 +15,25 @@ export type TodoItem = {
   completedAt: Date | null;
 };
 
-
 export type ShoppingListAction =
   | { type: "LOAD_ITEMS"; payload: TodoItem[] }
-  | { type: "ADD_ITEM"; payload: { id: string; text: string; quantity: number; createdAt: Date } }
+  | {
+      type: "ADD_ITEM";
+      payload: { id: string; text: string; quantity: number; createdAt: Date };
+    }
   | { type: "REMOVE_ITEM"; payload: string }
   | {
       type: "EDIT_ITEM";
       payload: { id: string; text: string; quantity: number };
     }
-  | { type: "TOGGLE_ITEM"; payload: { id: string; completed: boolean; completedAt: Date | null } }
-  | { type: "TOGGLE_ALL"; payload: boolean };
+  | {
+      type: "TOGGLE_ITEM";
+      payload: { id: string; completed: boolean; completedAt: Date | null };
+    }
+  | {
+      type: "TOGGLE_ALL";
+      payload: { id: string; completed: boolean; completedAt: Date | null }[];
+    };
 
 export function shoppingListReducer(
   state: TodoItem[],
@@ -55,12 +62,27 @@ export function shoppingListReducer(
     case "TOGGLE_ITEM":
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, completed: action.payload.completed, completedAt: action.payload.completedAt }
-          : item
+          ? {
+              ...item,
+              completed: action.payload.completed,
+              completedAt: action.payload.completedAt,
+            }
+          : item,
       );
 
     case "TOGGLE_ALL":
-      return toggleAllItems(state, action.payload, new Date());
+      return state.map((item) => {
+        const match = action.payload.find(
+          (updatedItem) => updatedItem.id === item.id,
+        );
+        return match
+          ? {
+              ...item,
+              completed: match.completed,
+              completedAt: match.completedAt,
+            }
+          : item;
+      });
 
     case "EDIT_ITEM":
       return state.map((item) =>
@@ -92,16 +114,27 @@ function App() {
   useEffect(() => {
     fetch("/api/shopping-items")
       .then((res) => res.json())
-      .then((data: Array<{ id: string; text: string; quantity: number; completed: boolean; createdAt: string; completedAt: string | null }>) => {
-        dispatch({
-          type: "LOAD_ITEMS",
-          payload: data.map((item) => ({
-            ...item,
-            createdAt: new Date(item.createdAt),
-            completedAt: item.completedAt ? new Date(item.completedAt) : null,
-          })),
-        });
-      })
+      .then(
+        (
+          data: Array<{
+            id: string;
+            text: string;
+            quantity: number;
+            completed: boolean;
+            createdAt: string;
+            completedAt: string | null;
+          }>,
+        ) => {
+          dispatch({
+            type: "LOAD_ITEMS",
+            payload: data.map((item) => ({
+              ...item,
+              createdAt: new Date(item.createdAt),
+              completedAt: item.completedAt ? new Date(item.completedAt) : null,
+            })),
+          });
+        },
+      )
       .catch((err) => console.error("Failed to load items:", err));
   }, []);
 
@@ -182,7 +215,9 @@ function App() {
           payload: {
             id,
             completed: updated.completed,
-            completedAt: updated.completedAt ? new Date(updated.completedAt) : null,
+            completedAt: updated.completedAt
+              ? new Date(updated.completedAt)
+              : null,
           },
         });
       })
@@ -232,7 +267,32 @@ function App() {
   }
 
   function checkUncheckAllItems() {
-    dispatch({ type: "TOGGLE_ALL", payload: allCompleted });
+    if (shoppingList.length === 0) return;
+
+    const newCompleted = !allCompleted;
+
+    Promise.all(
+      shoppingList.map((item) =>
+        fetch(`/api/shopping-items/${item.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ completed: newCompleted }),
+        }).then((res) => res.json()),
+      ),
+    )
+      .then((updatedItems) => {
+        dispatch({
+          type: "TOGGLE_ALL",
+          payload: updatedItems.map((updated) => ({
+            id: updated.id,
+            completed: updated.completed,
+            completedAt: updated.completedAt
+              ? new Date(updated.completedAt)
+              : null,
+          })),
+        });
+      })
+      .catch((err) => console.error("Failed to toggle all items:", err));
   }
 
   const allCompleted =
