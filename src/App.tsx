@@ -112,30 +112,30 @@ function App() {
   const toast = useToast();
 
   useEffect(() => {
-    fetch("/api/shopping-items")
-      .then((res) => res.json())
-      .then(
-        (
-          data: Array<{
-            id: string;
-            text: string;
-            quantity: number;
-            completed: boolean;
-            createdAt: string;
-            completedAt: string | null;
-          }>,
-        ) => {
-          dispatch({
-            type: "LOAD_ITEMS",
-            payload: data.map((item) => ({
-              ...item,
-              createdAt: new Date(item.createdAt),
-              completedAt: item.completedAt ? new Date(item.completedAt) : null,
-            })),
-          });
-        },
-      )
-      .catch((err) => console.error("Failed to load items:", err));
+    async function loadItems() {
+      try {
+        const res = await fetch("/api/shopping-items");
+        const data: Array<{
+          id: string;
+          text: string;
+          quantity: number;
+          completed: boolean;
+          createdAt: string;
+          completedAt: string | null;
+        }> = await res.json();
+        dispatch({
+          type: "LOAD_ITEMS",
+          payload: data.map((item) => ({
+            ...item,
+            createdAt: new Date(item.createdAt),
+            completedAt: item.completedAt ? new Date(item.completedAt) : null,
+          })),
+        });
+      } catch (err) {
+        console.error("Failed to load items:", err);
+      }
+    }
+    loadItems();
   }, []);
 
   const filteredList = [...shoppingList]
@@ -154,7 +154,7 @@ function App() {
         : b.text.localeCompare(a.text),
     );
 
-  function addListItem() {
+  async function addListItem() {
     const value = newItemText.trim();
     if (!value) return;
 
@@ -169,27 +169,27 @@ function App() {
       return;
     }
 
-    fetch("/api/shopping-items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: value, quantity }),
-    })
-      .then((res) => res.json())
-      .then((newItem) => {
-        dispatch({
-          type: "ADD_ITEM",
-          payload: {
-            id: newItem.id,
-            text: newItem.text,
-            quantity: newItem.quantity,
-            createdAt: new Date(newItem.createdAt),
-          },
-        });
-      })
-      .catch((err) => console.error("Failed to add item:", err));
+    try {
+      const res = await fetch("/api/shopping-items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: value, quantity }),
+      });
+      const newItem = await res.json();
+      dispatch({
+        type: "ADD_ITEM",
+        payload: {
+          id: newItem.id,
+          text: newItem.text,
+          quantity: newItem.quantity,
+          createdAt: new Date(newItem.createdAt),
+        },
+      });
+    } catch (err) {
+      console.error("Failed to add item:", err);
+    }
 
     setNewItemText("");
-
     quantityRef.current!.value = "";
   }
 
@@ -199,42 +199,44 @@ function App() {
     }
   }
 
-  function toggleItem(id: string) {
+  async function toggleItem(id: string) {
     const item = shoppingList.find((listItem) => listItem.id === id);
     if (!item) return;
 
-    fetch(`/api/shopping-items/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ completed: !item.completed }),
-    })
-      .then((res) => res.json())
-      .then((updated) => {
-        dispatch({
-          type: "TOGGLE_ITEM",
-          payload: {
-            id,
-            completed: updated.completed,
-            completedAt: updated.completedAt
-              ? new Date(updated.completedAt)
-              : null,
-          },
-        });
-      })
-      .catch((err) => console.error("Failed to toggle item:", err));
+    try {
+      const res = await fetch(`/api/shopping-items/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: !item.completed }),
+      });
+      const updated = await res.json();
+      dispatch({
+        type: "TOGGLE_ITEM",
+        payload: {
+          id,
+          completed: updated.completed,
+          completedAt: updated.completedAt
+            ? new Date(updated.completedAt)
+            : null,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to toggle item:", err);
+    }
   }
 
-  function removeItem(id: string) {
-    fetch(`/api/shopping-items/${id}`, {
-      method: "DELETE",
-    })
-      .then(() => {
-        dispatch({ type: "REMOVE_ITEM", payload: id });
-      })
-      .catch((err) => console.error("Failed to delete item:", err));
+  async function removeItem(id: string) {
+    try {
+      await fetch(`/api/shopping-items/${id}`, {
+        method: "DELETE",
+      });
+      dispatch({ type: "REMOVE_ITEM", payload: id });
+    } catch (err) {
+      console.error("Failed to delete item:", err);
+    }
   }
 
-  function editItem(id: string, newText: string, quantity: number) {
+  async function editItem(id: string, newText: string, quantity: number) {
     const trimmedText = newText.trim();
     if (!trimmedText) return;
 
@@ -248,51 +250,53 @@ function App() {
       return;
     }
 
-    fetch(`/api/shopping-items/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: trimmedText, quantity }),
-    })
-      .then(() => {
-        dispatch({
-          type: "EDIT_ITEM",
-          payload: { id, text: trimmedText, quantity },
-        });
-      })
-      .catch((err) => console.error("Failed to edit item:", err));
+    try {
+      await fetch(`/api/shopping-items/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmedText, quantity }),
+      });
+      dispatch({
+        type: "EDIT_ITEM",
+        payload: { id, text: trimmedText, quantity },
+      });
+    } catch (err) {
+      console.error("Failed to edit item:", err);
+    }
   }
 
   function sortShoppingList() {
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   }
 
-  function checkUncheckAllItems() {
+  async function checkUncheckAllItems() {
     if (shoppingList.length === 0) return;
 
     const newCompleted = !allCompleted;
 
-    Promise.all(
-      shoppingList.map((item) =>
-        fetch(`/api/shopping-items/${item.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ completed: newCompleted }),
-        }).then((res) => res.json()),
-      ),
-    )
-      .then((updatedItems) => {
-        dispatch({
-          type: "TOGGLE_ALL",
-          payload: updatedItems.map((updated) => ({
-            id: updated.id,
-            completed: updated.completed,
-            completedAt: updated.completedAt
-              ? new Date(updated.completedAt)
-              : null,
-          })),
-        });
-      })
-      .catch((err) => console.error("Failed to toggle all items:", err));
+    try {
+      const updatedItems = await Promise.all(
+        shoppingList.map((item) =>
+          fetch(`/api/shopping-items/${item.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ completed: newCompleted }),
+          }).then((res) => res.json()),
+        ),
+      );
+      dispatch({
+        type: "TOGGLE_ALL",
+        payload: updatedItems.map((updated) => ({
+          id: updated.id,
+          completed: updated.completed,
+          completedAt: updated.completedAt
+            ? new Date(updated.completedAt)
+            : null,
+        })),
+      });
+    } catch (err) {
+      console.error("Failed to toggle all items:", err);
+    }
   }
 
   const allCompleted =
