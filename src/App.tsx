@@ -38,8 +38,8 @@ function App() {
             completedAt: item.completedAt ? new Date(item.completedAt) : null,
           })),
         });
-      } catch (err) {
-        console.error("Failed to load items:", err);
+      } catch {
+        toast.show("Failed to load items. Please try again.");
       }
     }
     loadItems();
@@ -92,8 +92,8 @@ function App() {
           createdAt: new Date(newItem.createdAt),
         },
       });
-    } catch (err) {
-      console.error("Failed to add item:", err);
+    } catch {
+      toast.show("Failed to add item. Please try again.");
     }
 
     setNewItemText("");
@@ -127,8 +127,8 @@ function App() {
             : null,
         },
       });
-    } catch (err) {
-      console.error("Failed to toggle item:", err);
+    } catch {
+      toast.show("Failed to toggle item. Please try again.");
     }
   }
 
@@ -138,8 +138,8 @@ function App() {
         method: "DELETE",
       });
       dispatch({ type: "REMOVE_ITEM", payload: id });
-    } catch (err) {
-      console.error("Failed to delete item:", err);
+    } catch {
+      toast.show("Failed to delete item. Please try again.");
     }
   }
 
@@ -167,8 +167,8 @@ function App() {
         type: "EDIT_ITEM",
         payload: { id, text: trimmedText, quantity },
       });
-    } catch (err) {
-      console.error("Failed to edit item:", err);
+    } catch {
+      toast.show("Failed to edit item. Please try again.");
     }
   }
 
@@ -201,8 +201,8 @@ function App() {
             : null,
         })),
       });
-    } catch (err) {
-      console.error("Failed to toggle all items:", err);
+    } catch {
+      toast.show("Failed to toggle all items. Please try again.");
     }
   }
 
