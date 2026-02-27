@@ -107,8 +107,7 @@ function App() {
   }
 
   async function toggleItem(id: string) {
-    const item = shoppingList.find((listItem) => listItem.id === id);
-    if (!item) return;
+    const item = shoppingList.find((listItem) => listItem.id === id)!;
 
     try {
       const res = await fetch(`/api/shopping-items/${id}`, {
