@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { TodoItem } from "../App";
+import type { TodoItem } from "../reducers/shoppingListReducer";
 import { formatDate } from "../utils/formatDate";
 
 type ShoppingListProps = {
