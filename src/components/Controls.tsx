@@ -7,6 +7,7 @@ type ControlsProps = {
   addListItemKeyboard: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   sortShoppingList: () => void;
   sortOrder: "asc" | "desc";
+  isPending: boolean;
 };
 
 export default function Controls({
@@ -18,6 +19,7 @@ export default function Controls({
   addListItemKeyboard,
   sortShoppingList,
   sortOrder,
+  isPending,
 }: ControlsProps) {
   return (
     <div className="controls">
@@ -36,17 +38,17 @@ export default function Controls({
         min={1}
         step={1}
         aria-label="Quantity"
-        disabled={newItemText.trim() === ""}
+        disabled={newItemText.trim() === "" || isPending}
         onInput={(e) => {
           const input = e.currentTarget;
           if (input.valueAsNumber < 1) input.value = "1";
         }}
       />
 
-      <button onClick={addListItem} disabled={newItemText.trim() === ""}>
+      <button onClick={addListItem} disabled={newItemText.trim() === "" || isPending}>
         ✓
       </button>
-      <button onClick={sortShoppingList}>
+      <button onClick={sortShoppingList} disabled={isPending}>
         {sortOrder === "asc" ? "A→Z" : "Z→A"}
       </button>
     </div>

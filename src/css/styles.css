@@ -166,6 +166,11 @@ h1 {
   background: var(--primary-color);
 }
 
+.controls button:last-of-type:disabled:hover {
+  background: var(--background);
+  border-color: var(--border-color);
+}
+
 .controls input:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -428,6 +433,23 @@ h1 {
   flex: 0;
 }
 
+.edit:disabled,
+.delete:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.edit:disabled:hover,
+.delete:disabled:hover {
+  color: var(--text-muted);
+  background: transparent;
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .edit:hover {
   color: var(--primary-color);
   background: rgba(74, 144, 226, 0.1);
@@ -535,6 +557,8 @@ h1 {
 .spinner {
   display: block;
   margin: 2rem auto;
+  width: 64px;
+  height: 64px;
   color: var(--primary-color);
   animation: spin 1s linear infinite;
 }

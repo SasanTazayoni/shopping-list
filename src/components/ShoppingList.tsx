@@ -7,6 +7,7 @@ type ShoppingListProps = {
   toggleItem: (id: string) => void;
   removeItem: (id: string) => void;
   editItem: (id: string, newText: string, quantity: number) => void;
+  isPending: boolean;
 };
 
 export default function ShoppingList({
@@ -14,6 +15,7 @@ export default function ShoppingList({
   toggleItem,
   removeItem,
   editItem,
+  isPending,
 }: ShoppingListProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -68,6 +70,7 @@ export default function ShoppingList({
                 type="checkbox"
                 checked={item.completed}
                 onChange={() => toggleItem(item.id)}
+                disabled={isPending}
               />
 
               {isEditing ? (
@@ -93,7 +96,7 @@ export default function ShoppingList({
               )}
 
               {isEditing ? (
-                <button className="edit" onClick={() => saveEdit(item.id)}>
+                <button className="edit" onClick={() => saveEdit(item.id)} disabled={isPending}>
                   ✓
                 </button>
               ) : (
@@ -102,6 +105,7 @@ export default function ShoppingList({
                   onClick={() =>
                     startEditing(item.id, item.text, item.quantity)
                   }
+                  disabled={isPending}
                 >
                   ✎
                 </button>
@@ -112,6 +116,7 @@ export default function ShoppingList({
                 onClick={() =>
                   isEditing ? cancelEdit() : removeItem(item.id)
                 }
+                disabled={isPending}
               >
                 ✕
               </button>

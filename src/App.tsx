@@ -15,6 +15,7 @@ function App() {
   const [hideCompleted, setHideCompleted] = useState(false);
   const [newItemText, setNewItemText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isPending, setIsPending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const quantityRef = useRef<HTMLInputElement>(null);
 
@@ -80,6 +81,7 @@ function App() {
       return;
     }
 
+    setIsPending(true);
     try {
       const res = await fetch("/api/shopping-items", {
         method: "POST",
@@ -98,6 +100,8 @@ function App() {
       });
     } catch {
       toast.show("Failed to add item. Please try again.");
+    } finally {
+      setIsPending(false);
     }
 
     setNewItemText("");
@@ -113,6 +117,7 @@ function App() {
   async function toggleItem(id: string) {
     const item = shoppingList.find((listItem) => listItem.id === id)!;
 
+    setIsPending(true);
     try {
       const res = await fetch(`/api/shopping-items/${id}`, {
         method: "PUT",
@@ -132,10 +137,13 @@ function App() {
       });
     } catch {
       toast.show("Failed to toggle item. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
   async function removeItem(id: string) {
+    setIsPending(true);
     try {
       await fetch(`/api/shopping-items/${id}`, {
         method: "DELETE",
@@ -143,6 +151,8 @@ function App() {
       dispatch({ type: "REMOVE_ITEM", payload: id });
     } catch {
       toast.show("Failed to delete item. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
@@ -160,6 +170,7 @@ function App() {
       return;
     }
 
+    setIsPending(true);
     try {
       await fetch(`/api/shopping-items/${id}`, {
         method: "PUT",
@@ -172,6 +183,8 @@ function App() {
       });
     } catch {
       toast.show("Failed to edit item. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
@@ -184,6 +197,7 @@ function App() {
 
     const newCompleted = !allCompleted;
 
+    setIsPending(true);
     try {
       const updatedItems = await Promise.all(
         shoppingList.map((item) =>
@@ -206,6 +220,8 @@ function App() {
       });
     } catch {
       toast.show("Failed to toggle all items. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
@@ -233,9 +249,10 @@ function App() {
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={sortShoppingList}
         sortOrder={sortOrder}
+        isPending={isPending}
       />
 
-      <ToggleAll checked={allCompleted} onToggle={checkUncheckAllItems} />
+      <ToggleAll checked={allCompleted} onToggle={checkUncheckAllItems} isPending={isPending} />
 
       <FilterForm
         filterText={filterText}
@@ -249,6 +266,7 @@ function App() {
         toggleItem={toggleItem}
         removeItem={removeItem}
         editItem={editItem}
+        isPending={isPending}
       />
 
       {toast.message && (
