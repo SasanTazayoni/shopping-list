@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import { Loader2 } from "lucide-react";
 import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
@@ -13,6 +14,7 @@ function App() {
   const [filterText, setFilterText] = useState("");
   const [hideCompleted, setHideCompleted] = useState(false);
   const [newItemText, setNewItemText] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const quantityRef = useRef<HTMLInputElement>(null);
 
@@ -40,6 +42,8 @@ function App() {
         });
       } catch {
         toast.show("Failed to load items. Please try again.");
+      } finally {
+        setIsLoading(false);
       }
     }
     loadItems();
@@ -207,6 +211,14 @@ function App() {
 
   const allCompleted =
     shoppingList.length > 0 && shoppingList.every((item) => item.completed);
+
+  if (isLoading) {
+    return (
+      <div className="app">
+        <Loader2 className="spinner" />
+      </div>
+    );
+  }
 
   return (
     <div className="app">
