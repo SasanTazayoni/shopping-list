@@ -913,6 +913,65 @@ describe("App", () => {
     expect(screen.getByText("Eggs")).toBeInTheDocument();
   });
 
+  it("disables all interactive elements while a mutation is in flight", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve([
+          {
+            id: "1",
+            text: "Milk",
+            quantity: 1,
+            completed: false,
+            createdAt: new Date().toISOString(),
+            completedAt: null,
+          },
+        ]),
+    } as unknown as Response);
+
+    await act(async () => {
+      render(<App />);
+    });
+
+    let resolveMutation!: (r: Response) => void;
+    const deferred = new Promise<Response>((res) => {
+      resolveMutation = res;
+    });
+    vi.mocked(fetch).mockReturnValueOnce(deferred as unknown as Promise<Response>);
+
+    act(() => {
+      screen.getByRole("checkbox", { name: "" }).click();
+    });
+
+    expect(screen.getByRole("checkbox", { name: /check\/uncheck all/i })).toBeDisabled();
+    expect(screen.getByRole("checkbox", { name: "" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "✎" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "✕" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /a→z|z→a/i })).toBeDisabled();
+
+    await act(async () => {
+      resolveMutation({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            id: "1",
+            text: "Milk",
+            quantity: 1,
+            completed: true,
+            createdAt: new Date().toISOString(),
+            completedAt: new Date().toISOString(),
+          }),
+      } as unknown as Response);
+      await deferred;
+    });
+
+    expect(screen.getByRole("checkbox", { name: /check\/uncheck all/i })).not.toBeDisabled();
+    expect(screen.getByRole("checkbox", { name: "" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "✎" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "✕" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: /a→z|z→a/i })).not.toBeDisabled();
+  });
+
   it("returns the current state for unknown action types", () => {
     const initialState = [
       {

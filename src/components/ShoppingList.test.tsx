@@ -39,6 +39,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -74,6 +75,7 @@ describe("ShoppingList", () => {
         toggleItem={toggleItem}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -111,6 +113,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -141,6 +144,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -179,6 +183,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -210,6 +215,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -248,6 +254,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -285,6 +292,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={removeItem}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -328,6 +336,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -357,6 +366,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -393,6 +403,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={editItem}
+        isPending={false}
       />,
     );
 
@@ -424,6 +435,7 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
@@ -444,11 +456,62 @@ describe("ShoppingList", () => {
         toggleItem={vi.fn()}
         removeItem={vi.fn()}
         editItem={vi.fn()}
+        isPending={false}
       />,
     );
 
     const list = screen.getByRole("list");
     expect(list).toBeInTheDocument();
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  it("disables checkbox, edit, and delete buttons when isPending is true", () => {
+    render(
+      <ShoppingList
+        shoppingList={[
+          {
+            id: "item-1",
+            text: "Milk",
+            quantity: 1,
+            completed: false,
+            createdAt: new Date("2024-01-01"),
+            completedAt: null,
+          },
+        ]}
+        toggleItem={vi.fn()}
+        removeItem={vi.fn()}
+        editItem={vi.fn()}
+        isPending={true}
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).toBeDisabled();
+    expect(screen.getByRole("button", { name: "✎" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "✕" })).toBeDisabled();
+  });
+
+  it("enables checkbox, edit, and delete buttons when isPending is false", () => {
+    render(
+      <ShoppingList
+        shoppingList={[
+          {
+            id: "item-1",
+            text: "Milk",
+            quantity: 1,
+            completed: false,
+            createdAt: new Date("2024-01-01"),
+            completedAt: null,
+          },
+        ]}
+        toggleItem={vi.fn()}
+        removeItem={vi.fn()}
+        editItem={vi.fn()}
+        isPending={false}
+      />,
+    );
+
+    expect(screen.getByRole("checkbox")).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "✎" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "✕" })).not.toBeDisabled();
   });
 });

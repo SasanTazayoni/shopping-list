@@ -19,6 +19,7 @@ describe("Controls", () => {
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
         sortOrder="asc"
+        isPending={false}
       />,
     );
 
@@ -46,6 +47,7 @@ describe("Controls", () => {
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
         sortOrder="asc"
+        isPending={false}
       />,
     );
 
@@ -69,6 +71,7 @@ describe("Controls", () => {
         addListItemKeyboard={addListItemKeyboard}
         sortShoppingList={vi.fn()}
         sortOrder="asc"
+        isPending={false}
       />,
     );
 
@@ -92,6 +95,7 @@ describe("Controls", () => {
         addListItemKeyboard={vi.fn()}
         sortShoppingList={sortShoppingList}
         sortOrder="asc"
+        isPending={false}
       />,
     );
 
@@ -113,6 +117,7 @@ describe("Controls", () => {
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
         sortOrder="desc"
+        isPending={false}
       />,
     );
 
@@ -131,6 +136,7 @@ describe("Controls", () => {
         addListItemKeyboard={vi.fn()}
         sortShoppingList={vi.fn()}
         sortOrder="asc"
+        isPending={false}
       />,
     );
 
@@ -141,5 +147,43 @@ describe("Controls", () => {
 
     fireEvent.input(quantityInput, { target: { value: "-5" } });
     expect(quantityInput.value).toBe("1");
+  });
+
+  it("disables add button and sort button when isPending is true", () => {
+    render(
+      <Controls
+        inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText="milk"
+        setNewItemText={vi.fn()}
+        addListItem={vi.fn()}
+        addListItemKeyboard={vi.fn()}
+        sortShoppingList={vi.fn()}
+        sortOrder="asc"
+        isPending={true}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "✓" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "A→Z" })).toBeDisabled();
+  });
+
+  it("enables add button and sort button when isPending is false and text is present", () => {
+    render(
+      <Controls
+        inputRef={inputRef}
+        quantityRef={quantityRef}
+        newItemText="milk"
+        setNewItemText={vi.fn()}
+        addListItem={vi.fn()}
+        addListItemKeyboard={vi.fn()}
+        sortShoppingList={vi.fn()}
+        sortOrder="asc"
+        isPending={false}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "✓" })).not.toBeDisabled();
+    expect(screen.getByRole("button", { name: "A→Z" })).not.toBeDisabled();
   });
 });

@@ -6,7 +6,7 @@ import ToggleAll from "./ToggleAll";
 
 describe("ToggleAll", () => {
   it("renders a checkbox with the label text", () => {
-    render(<ToggleAll checked={false} onToggle={() => {}} />);
+    render(<ToggleAll checked={false} onToggle={() => {}} isPending={false} />);
 
     const checkbox = screen.getByRole("checkbox", {
       name: "Check/Uncheck all",
@@ -17,7 +17,7 @@ describe("ToggleAll", () => {
 
   it("reflects the checked prop", () => {
     const { rerender } = render(
-      <ToggleAll checked={true} onToggle={() => {}} />,
+      <ToggleAll checked={true} onToggle={() => {}} isPending={false} />,
     );
 
     const checkbox = screen.getByRole("checkbox", {
@@ -26,7 +26,7 @@ describe("ToggleAll", () => {
 
     expect(checkbox).toBeChecked();
 
-    rerender(<ToggleAll checked={false} onToggle={() => {}} />);
+    rerender(<ToggleAll checked={false} onToggle={() => {}} isPending={false} />);
 
     expect(checkbox).not.toBeChecked();
   });
@@ -34,7 +34,7 @@ describe("ToggleAll", () => {
   it("calls onToggle when the user toggles it", async () => {
     const onToggle = vi.fn();
 
-    render(<ToggleAll checked={false} onToggle={onToggle} />);
+    render(<ToggleAll checked={false} onToggle={onToggle} isPending={false} />);
 
     const checkbox = screen.getByRole("checkbox", {
       name: "Check/Uncheck all",
@@ -44,5 +44,17 @@ describe("ToggleAll", () => {
     await user.click(checkbox);
 
     expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables the checkbox when isPending is true", () => {
+    render(<ToggleAll checked={false} onToggle={vi.fn()} isPending={true} />);
+
+    expect(screen.getByRole("checkbox", { name: "Check/Uncheck all" })).toBeDisabled();
+  });
+
+  it("enables the checkbox when isPending is false", () => {
+    render(<ToggleAll checked={false} onToggle={vi.fn()} isPending={false} />);
+
+    expect(screen.getByRole("checkbox", { name: "Check/Uncheck all" })).not.toBeDisabled();
   });
 });
