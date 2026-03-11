@@ -51,11 +51,11 @@ export default function ShoppingList({
   }
 
   function incrementQuantity() {
-    setEditQuantity((q) => q + 1);
+    setEditQuantity((currentQuantity) => currentQuantity + 1);
   }
 
   function decrementQuantity() {
-    setEditQuantity((q) => Math.max(1, q - 1));
+    setEditQuantity((currentQuantity) => Math.max(1, currentQuantity - 1));
   }
 
   return (
