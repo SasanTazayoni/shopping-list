@@ -30,6 +30,7 @@ export default function Controls({
         onChange={(e) => setNewItemText(e.target.value)}
         onKeyDown={addListItemKeyboard}
         placeholder="Add an item..."
+        maxLength={50}
       />
       <input
         className="quantity-input"
@@ -45,7 +46,10 @@ export default function Controls({
         }}
       />
 
-      <button onClick={addListItem} disabled={newItemText.trim() === "" || isPending}>
+      <button
+        onClick={addListItem}
+        disabled={newItemText.trim() === "" || isPending}
+      >
         ✓
       </button>
       <button onClick={sortShoppingList} disabled={isPending}>
