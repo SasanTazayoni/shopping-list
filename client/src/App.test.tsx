@@ -7,21 +7,17 @@ import {
   shoppingListReducer,
   type ShoppingListAction,
 } from "./reducers/shoppingListReducer";
+import axios from "axios";
+
+vi.mock("axios");
 
 describe("App", () => {
   beforeEach(() => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve([]),
-      }),
-    );
+    vi.mocked(axios.get).mockResolvedValue({ data: [] });
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
   });
 
   it("loads items from the API on initial render", async () => {
@@ -44,10 +40,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -63,18 +56,16 @@ describe("App", () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          id: "new-id",
-          text: "Milk",
-          quantity: 1,
-          completed: false,
-          createdAt: new Date().toISOString(),
-          completedAt: null,
-        }),
-    } as unknown as Response);
+    vi.mocked(axios.post).mockResolvedValueOnce({
+      data: {
+        id: "new-id",
+        text: "Milk",
+        quantity: 1,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    });
 
     const input = screen.getByPlaceholderText((text) =>
       text.startsWith("Add an item"),
@@ -85,17 +76,14 @@ describe("App", () => {
     await user.type(input, "Milk");
     await user.click(screen.getByRole("button", { name: "✓" }));
 
-    expect(fetch).toHaveBeenCalledWith(
-      "/api/shopping-items",
-      expect.objectContaining({
-        method: "POST",
-        body: expect.stringContaining("Milk"),
-      }),
-    );
+    expect(axios.post).toHaveBeenCalledWith("/api/shopping-items", {
+      text: "Milk",
+      quantity: expect.any(Number),
+    });
   });
 
   it("shows a toast and error message when loading items fails", async () => {
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.get).mockRejectedValueOnce(new Error("Network error"));
 
     await act(async () => {
       render(<App />);
@@ -116,18 +104,16 @@ describe("App", () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          id: "new-id",
-          text: "Eggs",
-          quantity: 3,
-          completed: false,
-          createdAt: new Date().toISOString(),
-          completedAt: null,
-        }),
-    } as unknown as Response);
+    vi.mocked(axios.post).mockResolvedValueOnce({
+      data: {
+        id: "new-id",
+        text: "Eggs",
+        quantity: 3,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    });
 
     const user = userEvent.setup();
     const input = screen.getByPlaceholderText((text) =>
@@ -149,18 +135,16 @@ describe("App", () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          id: "new-id",
-          text: "Bread",
-          quantity: 1,
-          completed: false,
-          createdAt: new Date().toISOString(),
-          completedAt: null,
-        }),
-    } as unknown as Response);
+    vi.mocked(axios.post).mockResolvedValueOnce({
+      data: {
+        id: "new-id",
+        text: "Bread",
+        quantity: 1,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        completedAt: null,
+      },
+    });
 
     const user = userEvent.setup();
     const input = screen.getByPlaceholderText((text) =>
@@ -200,10 +184,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -234,10 +215,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -280,7 +258,7 @@ describe("App", () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.post).mockRejectedValueOnce(new Error("Network error"));
 
     const user = userEvent.setup();
     await user.type(screen.getByPlaceholderText(/add an item/i), "Milk");
@@ -303,34 +281,23 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch)
+    vi.mocked(axios.put)
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[0],
-            completed: true,
-            completedAt: new Date().toISOString(),
-          }),
-      } as unknown as Response)
+        data: {
+          ...seeded[0],
+          completed: true,
+          completedAt: new Date().toISOString(),
+        },
+      })
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[0],
-            completed: false,
-            completedAt: null,
-          }),
-      } as unknown as Response);
+        data: { ...seeded[0], completed: false, completedAt: null },
+      });
 
     const user = userEvent.setup();
     const checkbox = screen.getByRole("checkbox", { name: "" });
@@ -348,26 +315,24 @@ describe("App", () => {
   });
 
   it("shows a toast when toggling an item fails", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve([
-          {
-            id: "1",
-            text: "Milk",
-            quantity: 1,
-            completed: false,
-            createdAt: new Date().toISOString(),
-            completedAt: null,
-          },
-        ]),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          text: "Milk",
+          quantity: 1,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          completedAt: null,
+        },
+      ],
+    });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.put).mockRejectedValueOnce(new Error("Network error"));
 
     await userEvent.setup().click(screen.getByRole("checkbox", { name: "" }));
 
@@ -388,10 +353,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -401,6 +363,7 @@ describe("App", () => {
 
     expect(screen.getByText("Milk")).toBeInTheDocument();
 
+    vi.mocked(axios.delete).mockResolvedValueOnce({});
     const deleteButton = screen.getByRole("button", { name: "✕" });
     await user.click(deleteButton);
 
@@ -408,26 +371,24 @@ describe("App", () => {
   });
 
   it("shows a toast when deleting an item fails", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve([
-          {
-            id: "1",
-            text: "Milk",
-            quantity: 1,
-            completed: false,
-            createdAt: new Date().toISOString(),
-            completedAt: null,
-          },
-        ]),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          text: "Milk",
+          quantity: 1,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          completedAt: null,
+        },
+      ],
+    });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.delete).mockRejectedValueOnce(new Error("Network error"));
 
     await userEvent.setup().click(screen.getByRole("button", { name: "✕" }));
 
@@ -456,10 +417,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -485,26 +443,24 @@ describe("App", () => {
   });
 
   it("shows a toast when editing an item fails", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve([
-          {
-            id: "1",
-            text: "Milk",
-            quantity: 1,
-            completed: false,
-            createdAt: new Date().toISOString(),
-            completedAt: null,
-          },
-        ]),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          text: "Milk",
+          quantity: 1,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          completedAt: null,
+        },
+      ],
+    });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.put).mockRejectedValueOnce(new Error("Network error"));
 
     const user = userEvent.setup();
     const editButton = screen.getByRole("button", { name: "✎" });
@@ -531,10 +487,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -582,10 +535,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -644,10 +594,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -709,10 +656,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -758,52 +702,33 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch)
+    vi.mocked(axios.put)
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[0],
-            completed: true,
-            completedAt: new Date().toISOString(),
-          }),
-      } as unknown as Response)
+        data: {
+          ...seeded[0],
+          completed: true,
+          completedAt: new Date().toISOString(),
+        },
+      })
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[1],
-            completed: true,
-            completedAt: new Date().toISOString(),
-          }),
-      } as unknown as Response)
+        data: {
+          ...seeded[1],
+          completed: true,
+          completedAt: new Date().toISOString(),
+        },
+      })
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[0],
-            completed: false,
-            completedAt: null,
-          }),
-      } as unknown as Response)
+        data: { ...seeded[0], completed: false, completedAt: null },
+      })
       .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            ...seeded[1],
-            completed: false,
-            completedAt: null,
-          }),
-      } as unknown as Response);
+        data: { ...seeded[1], completed: false, completedAt: null },
+      });
 
     const user = userEvent.setup();
     const toggleAllCheckbox = screen.getByRole("checkbox", {
@@ -842,16 +767,13 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
     });
 
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
+    vi.mocked(axios.put).mockRejectedValueOnce(new Error("Network error"));
 
     const user = userEvent.setup();
     await user.click(
@@ -878,13 +800,13 @@ describe("App", () => {
       render(<App />);
     });
 
-    const fetchCallsBefore = vi.mocked(fetch).mock.calls.length;
+    const putCallsBefore = vi.mocked(axios.put).mock.calls.length;
 
     await userEvent
       .setup()
       .click(screen.getByRole("checkbox", { name: /check\/uncheck all/i }));
 
-    expect(vi.mocked(fetch).mock.calls.length).toBe(fetchCallsBefore);
+    expect(vi.mocked(axios.put).mock.calls.length).toBe(putCallsBefore);
   });
 
   it("shows empty state message when there are no items", async () => {
@@ -913,10 +835,7 @@ describe("App", () => {
       },
     ];
 
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(seeded),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: seeded });
 
     await act(async () => {
       render(<App />);
@@ -935,31 +854,30 @@ describe("App", () => {
   });
 
   it("disables all interactive elements while a mutation is in flight", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve([
-          {
-            id: "1",
-            text: "Milk",
-            quantity: 1,
-            completed: false,
-            createdAt: new Date().toISOString(),
-            completedAt: null,
-          },
-        ]),
-    } as unknown as Response);
+    vi.mocked(axios.get).mockResolvedValueOnce({
+      data: [
+        {
+          id: "1",
+          text: "Milk",
+          quantity: 1,
+          completed: false,
+          createdAt: new Date().toISOString(),
+          completedAt: null,
+        },
+      ],
+    });
 
     await act(async () => {
       render(<App />);
     });
 
-    let resolveMutation!: (r: Response) => void;
-    const deferred = new Promise<Response>((res) => {
+    let resolveMutation!: (r: { data: unknown }) => void;
+    const deferred = new Promise<{ data: unknown }>((res) => {
       resolveMutation = res;
     });
-    vi.mocked(fetch).mockReturnValueOnce(
-      deferred as unknown as Promise<Response>,
+
+    vi.mocked(axios.put).mockReturnValueOnce(
+      deferred as unknown as Promise<{ data: unknown }>,
     );
 
     act(() => {
@@ -976,17 +894,16 @@ describe("App", () => {
 
     await act(async () => {
       resolveMutation({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            id: "1",
-            text: "Milk",
-            quantity: 1,
-            completed: true,
-            createdAt: new Date().toISOString(),
-            completedAt: new Date().toISOString(),
-          }),
-      } as unknown as Response);
+        data: {
+          id: "1",
+          text: "Milk",
+          quantity: 1,
+          completed: true,
+          createdAt: new Date().toISOString(),
+          completedAt: new Date().toISOString(),
+        },
+      });
+
       await deferred;
     });
 

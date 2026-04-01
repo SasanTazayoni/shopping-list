@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import axios from "axios";
 import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
@@ -27,19 +28,14 @@ function App() {
   useEffect(() => {
     async function loadItems() {
       try {
-        const res = await fetch("/api/shopping-items");
-        if (!res.ok) {
-          const body = await res.text();
-          throw new Error(`GET /api/shopping-items failed with status ${res.status}: ${body}`);
-        }
-        const data: Array<{
+        const { data } = await axios.get<Array<{
           id: string;
           text: string;
           quantity: number;
           completed: boolean;
           createdAt: string;
           completedAt: string | null;
-        }> = await res.json();
+        }>>("/api/shopping-items");
         dispatch({
           type: "LOAD_ITEMS",
           payload: data.map((item) => ({
@@ -92,16 +88,7 @@ function App() {
 
     setIsPending(true);
     try {
-      const res = await fetch("/api/shopping-items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: value, quantity }),
-      });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`POST /api/shopping-items failed with status ${res.status}: ${body}`);
-      }
-      const newItem = await res.json();
+      const { data: newItem } = await axios.post("/api/shopping-items", { text: value, quantity });
       dispatch({
         type: "ADD_ITEM",
         payload: {
@@ -133,16 +120,7 @@ function App() {
 
     setIsPending(true);
     try {
-      const res = await fetch(`/api/shopping-items/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !item.completed }),
-      });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`PUT /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
-      }
-      const updated = await res.json();
+      const { data: updated } = await axios.put(`/api/shopping-items/${id}`, { completed: !item.completed });
       dispatch({
         type: "TOGGLE_ITEM",
         payload: {
@@ -164,13 +142,7 @@ function App() {
   async function removeItem(id: string) {
     setIsPending(true);
     try {
-      const res = await fetch(`/api/shopping-items/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`DELETE /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
-      }
+      await axios.delete(`/api/shopping-items/${id}`);
       dispatch({ type: "REMOVE_ITEM", payload: id });
     } catch (error) {
       toast.show("Failed to delete item. Please try again.");
@@ -196,15 +168,7 @@ function App() {
 
     setIsPending(true);
     try {
-      const res = await fetch(`/api/shopping-items/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: trimmedText, quantity }),
-      });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`PUT /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
-      }
+      await axios.put(`/api/shopping-items/${id}`, { text: trimmedText, quantity });
       dispatch({
         type: "EDIT_ITEM",
         payload: { id, text: trimmedText, quantity },
@@ -230,17 +194,7 @@ function App() {
     try {
       const updatedItems = await Promise.all(
         shoppingList.map((item) =>
-          fetch(`/api/shopping-items/${item.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ completed: newCompleted }),
-          }).then(async (res) => {
-            if (!res.ok) {
-              const body = await res.text();
-              throw new Error(`PUT /api/shopping-items/${item.id} failed with status ${res.status}: ${body}`);
-            }
-            return res.json();
-          }),
+          axios.put(`/api/shopping-items/${item.id}`, { completed: newCompleted }).then((res) => res.data),
         ),
       );
       dispatch({
