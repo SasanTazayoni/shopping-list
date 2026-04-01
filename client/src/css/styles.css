@@ -567,3 +567,10 @@ input[type="checkbox"]:disabled {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.empty-list-message {
+  text-align: center;
+  color: var(--text-muted, #888);
+  margin-top: 2rem;
+  font-size: 1rem;
+}

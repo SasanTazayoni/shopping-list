@@ -5,6 +5,7 @@ import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
 import ToggleAll from "./components/ToggleAll";
 import FilterForm from "./components/FilterForm";
+import EmptyList from "./components/EmptyList";
 import { useToast } from "./hooks/useToast";
 import { shoppingListReducer } from "./reducers/shoppingListReducer";
 
@@ -261,13 +262,17 @@ function App() {
         setHideCompleted={setHideCompleted}
       />
 
-      <ShoppingList
-        shoppingList={filteredList}
-        toggleItem={toggleItem}
-        removeItem={removeItem}
-        editItem={editItem}
-        isPending={isPending}
-      />
+      {shoppingList.length === 0 ? (
+        <EmptyList />
+      ) : (
+        <ShoppingList
+          shoppingList={filteredList}
+          toggleItem={toggleItem}
+          removeItem={removeItem}
+          editItem={editItem}
+          isPending={isPending}
+        />
+      )}
 
       {toast.message && (
         <div className={`toast${toast.fading ? " fading" : ""}`}>

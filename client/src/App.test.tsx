@@ -858,6 +858,14 @@ describe("App", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows empty state message when there are no items", async () => {
+    await act(async () => {
+      render(<App />);
+    });
+
+    expect(screen.getByText("No items yet. Add your first item!")).toBeInTheDocument();
+  });
+
   it("does nothing when clicking toggle all with an empty list", async () => {
     await act(async () => {
       render(<App />);
@@ -870,6 +878,12 @@ describe("App", () => {
       .click(screen.getByRole("checkbox", { name: /check\/uncheck all/i }));
 
     expect(vi.mocked(fetch).mock.calls.length).toBe(fetchCallsBefore);
+  });
+
+  it("shows empty state message when there are no items", async () => {
+    await act(async () => {
+      render(<App />);
+    });
   });
 
   it("hides completed items when 'Hide completed' is checked", async () => {
@@ -937,13 +951,17 @@ describe("App", () => {
     const deferred = new Promise<Response>((res) => {
       resolveMutation = res;
     });
-    vi.mocked(fetch).mockReturnValueOnce(deferred as unknown as Promise<Response>);
+    vi.mocked(fetch).mockReturnValueOnce(
+      deferred as unknown as Promise<Response>,
+    );
 
     act(() => {
       screen.getByRole("checkbox", { name: "" }).click();
     });
 
-    expect(screen.getByRole("checkbox", { name: /check\/uncheck all/i })).toBeDisabled();
+    expect(
+      screen.getByRole("checkbox", { name: /check\/uncheck all/i }),
+    ).toBeDisabled();
     expect(screen.getByRole("checkbox", { name: "" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "✎" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "✕" })).toBeDisabled();
@@ -965,7 +983,9 @@ describe("App", () => {
       await deferred;
     });
 
-    expect(screen.getByRole("checkbox", { name: /check\/uncheck all/i })).not.toBeDisabled();
+    expect(
+      screen.getByRole("checkbox", { name: /check\/uncheck all/i }),
+    ).not.toBeDisabled();
     expect(screen.getByRole("checkbox", { name: "" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "✎" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "✕" })).not.toBeDisabled();
