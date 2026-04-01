@@ -13,12 +13,14 @@ A full-stack shopping list app built with React (frontend) and Express (backend)
 ## Tech Stack
 
 **Frontend**
+
 - React 19 with TypeScript
 - `useReducer` for state management
 - `fetch` for API communication
 - Vite for development and bundling
 
 **Backend**
+
 - Node.js with Express
 - In-memory storage (no database)
 - REST API with 4 endpoints
@@ -26,21 +28,35 @@ A full-stack shopping list app built with React (frontend) and Express (backend)
 ## Getting Started
 
 **Clone the repository:**
+
 ```bash
 git clone https://github.com/your-username/my-inventory.git
 cd my-inventory
-npm install
+```
+
+**Install dependencies** (run each in a separate terminal from the project root):
+
+```bash
+cd client && npm install
+```
+
+```bash
+cd server && npm install
 ```
 
 You need two terminals running at the same time:
 
 **Terminal 1 — Start the API server:**
+
 ```bash
-npm run server
+cd server
+npm run dev
 ```
 
 **Terminal 2 — Start the frontend:**
+
 ```bash
+cd client
 npm run dev
 ```
 
@@ -48,11 +64,11 @@ Then open `http://localhost:5173/shopping-list/` in your browser.
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/shopping-items` | Get all items |
-| POST | `/api/shopping-items` | Add a new item |
-| PUT | `/api/shopping-items/:id` | Update an item |
+| Method | Endpoint                  | Description    |
+| ------ | ------------------------- | -------------- |
+| GET    | `/api/shopping-items`     | Get all items  |
+| POST   | `/api/shopping-items`     | Add a new item |
+| PUT    | `/api/shopping-items/:id` | Update an item |
 | DELETE | `/api/shopping-items/:id` | Delete an item |
 
 ### Example curl commands
@@ -74,5 +90,6 @@ curl -X DELETE http://localhost:3000/api/shopping-items/<id>
 ## Running Tests
 
 ```bash
-npm test
+cd client
+npm run test
 ```
