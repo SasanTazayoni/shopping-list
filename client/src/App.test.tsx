@@ -94,7 +94,7 @@ describe("App", () => {
     );
   });
 
-  it("shows a toast when loading items fails", async () => {
+  it("shows a toast and error message when loading items fails", async () => {
     vi.mocked(fetch).mockRejectedValueOnce(new Error("Network error"));
 
     await act(async () => {
@@ -103,6 +103,11 @@ describe("App", () => {
 
     expect(
       screen.getByText("Failed to load items. Please try again."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Something went wrong loading your list. Please refresh the page. If the problem persists, please try again later.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -863,7 +868,9 @@ describe("App", () => {
       render(<App />);
     });
 
-    expect(screen.getByText("No items yet. Add your first item!")).toBeInTheDocument();
+    expect(
+      screen.getByText("No items yet. Add your first item!"),
+    ).toBeInTheDocument();
   });
 
   it("does nothing when clicking toggle all with an empty list", async () => {

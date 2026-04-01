@@ -1,11 +1,12 @@
 import { useEffect, useReducer, useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
 import "./css/styles.css";
 import ShoppingList from "./components/ShoppingList";
 import Controls from "./components/Controls";
 import ToggleAll from "./components/ToggleAll";
 import FilterForm from "./components/FilterForm";
 import EmptyList from "./components/EmptyList";
+import LoadError from "./components/LoadError";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { useToast } from "./hooks/useToast";
 import { shoppingListReducer } from "./reducers/shoppingListReducer";
 
@@ -17,6 +18,7 @@ function App() {
   const [newItemText, setNewItemText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const quantityRef = useRef<HTMLInputElement>(null);
 
@@ -42,8 +44,10 @@ function App() {
             completedAt: item.completedAt ? new Date(item.completedAt) : null,
           })),
         });
-      } catch {
+      } catch (error) {
         toast.show("Failed to load items. Please try again.");
+        console.error("Failed to load shopping list items:", error);
+        setError(true);
       } finally {
         setIsLoading(false);
       }
@@ -229,11 +233,18 @@ function App() {
   const allCompleted =
     shoppingList.length > 0 && shoppingList.every((item) => item.completed);
 
-  if (isLoading) {
+  function renderList() {
+    if (isLoading) return <LoadingSpinner />;
+    if (error) return <LoadError />;
+    if (shoppingList.length === 0) return <EmptyList />;
     return (
-      <div className="app">
-        <Loader2 className="spinner" />
-      </div>
+      <ShoppingList
+        shoppingList={filteredList}
+        toggleItem={toggleItem}
+        removeItem={removeItem}
+        editItem={editItem}
+        isPending={isPending}
+      />
     );
   }
 
@@ -253,7 +264,11 @@ function App() {
         isPending={isPending}
       />
 
-      <ToggleAll checked={allCompleted} onToggle={checkUncheckAllItems} isPending={isPending} />
+      <ToggleAll
+        checked={allCompleted}
+        onToggle={checkUncheckAllItems}
+        isPending={isPending}
+      />
 
       <FilterForm
         filterText={filterText}
@@ -262,17 +277,7 @@ function App() {
         setHideCompleted={setHideCompleted}
       />
 
-      {shoppingList.length === 0 ? (
-        <EmptyList />
-      ) : (
-        <ShoppingList
-          shoppingList={filteredList}
-          toggleItem={toggleItem}
-          removeItem={removeItem}
-          editItem={editItem}
-          isPending={isPending}
-        />
-      )}
+      {renderList()}
 
       {toast.message && (
         <div className={`toast${toast.fading ? " fading" : ""}`}>

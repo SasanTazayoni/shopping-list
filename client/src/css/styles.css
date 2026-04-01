@@ -495,14 +495,6 @@ input[type="checkbox"]:disabled {
   font-weight: 600;
 }
 
-.list:empty::after {
-  content: "No items yet. Add your first item above!";
-  display: block;
-  text-align: center;
-  padding: 3rem 2rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
 
 .list::-webkit-scrollbar {
   width: 8px;
@@ -573,4 +565,12 @@ input[type="checkbox"]:disabled {
   color: var(--text-muted, #888);
   margin-top: 2rem;
   font-size: 1rem;
+}
+
+.load-error {
+  text-align: center;
+  color: var(--danger-color);
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
