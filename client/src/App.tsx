@@ -28,6 +28,10 @@ function App() {
     async function loadItems() {
       try {
         const res = await fetch("/api/shopping-items");
+        if (!res.ok) {
+          const body = await res.text();
+          throw new Error(`GET /api/shopping-items failed with status ${res.status}: ${body}`);
+        }
         const data: Array<{
           id: string;
           text: string;
@@ -93,6 +97,10 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: value, quantity }),
       });
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`POST /api/shopping-items failed with status ${res.status}: ${body}`);
+      }
       const newItem = await res.json();
       dispatch({
         type: "ADD_ITEM",
@@ -103,8 +111,9 @@ function App() {
           createdAt: new Date(newItem.createdAt),
         },
       });
-    } catch {
+    } catch (error) {
       toast.show("Failed to add item. Please try again.");
+      console.error("Failed to add new item:", error);
     } finally {
       setIsPending(false);
     }
@@ -129,6 +138,10 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ completed: !item.completed }),
       });
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`PUT /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
+      }
       const updated = await res.json();
       dispatch({
         type: "TOGGLE_ITEM",
@@ -140,8 +153,9 @@ function App() {
             : null,
         },
       });
-    } catch {
+    } catch (error) {
       toast.show("Failed to toggle item. Please try again.");
+      console.error(`Failed to toggle item ${id}:`, error);
     } finally {
       setIsPending(false);
     }
@@ -150,12 +164,17 @@ function App() {
   async function removeItem(id: string) {
     setIsPending(true);
     try {
-      await fetch(`/api/shopping-items/${id}`, {
+      const res = await fetch(`/api/shopping-items/${id}`, {
         method: "DELETE",
       });
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`DELETE /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
+      }
       dispatch({ type: "REMOVE_ITEM", payload: id });
-    } catch {
+    } catch (error) {
       toast.show("Failed to delete item. Please try again.");
+      console.error(`Failed to delete item ${id}:`, error);
     } finally {
       setIsPending(false);
     }
@@ -177,17 +196,22 @@ function App() {
 
     setIsPending(true);
     try {
-      await fetch(`/api/shopping-items/${id}`, {
+      const res = await fetch(`/api/shopping-items/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: trimmedText, quantity }),
       });
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`PUT /api/shopping-items/${id} failed with status ${res.status}: ${body}`);
+      }
       dispatch({
         type: "EDIT_ITEM",
         payload: { id, text: trimmedText, quantity },
       });
-    } catch {
+    } catch (error) {
       toast.show("Failed to edit item. Please try again.");
+      console.error(`Failed to edit item ${id}:`, error);
     } finally {
       setIsPending(false);
     }
@@ -210,7 +234,13 @@ function App() {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ completed: newCompleted }),
-          }).then((res) => res.json()),
+          }).then(async (res) => {
+            if (!res.ok) {
+              const body = await res.text();
+              throw new Error(`PUT /api/shopping-items/${item.id} failed with status ${res.status}: ${body}`);
+            }
+            return res.json();
+          }),
         ),
       );
       dispatch({
@@ -223,8 +253,9 @@ function App() {
             : null,
         })),
       });
-    } catch {
+    } catch (error) {
       toast.show("Failed to toggle all items. Please try again.");
+      console.error("Failed to toggle all items:", error);
     } finally {
       setIsPending(false);
     }
