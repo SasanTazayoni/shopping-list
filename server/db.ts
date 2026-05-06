@@ -24,7 +24,7 @@ export async function getItem(id: string) {
   return await pool.query("SELECT * FROM shopping_items WHERE id = $1", [id]);
 }
 
-export async function replaceItem(
+export async function updateItem(
   text: string,
   quantity: number,
   completed: boolean,
