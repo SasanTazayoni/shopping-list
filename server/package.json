@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon --exec tsx index.ts",
     "start": "tsx index.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "init-db": "tsx init-db.ts"
   },
   "dependencies": {
     "dotenv": "^17.3.1",
