@@ -24,6 +24,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - name: Deploy to Heroku
+        working-directory: ${{ github.workspace }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
