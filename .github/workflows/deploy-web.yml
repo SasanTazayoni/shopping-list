@@ -26,9 +26,10 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Deploy to Heroku
-        working-directory: ${{ github.workspace }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
+          cd $GITHUB_WORKSPACE
+          pwd && ls
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/shopping-list-client.git
           git subtree push --prefix client heroku main
