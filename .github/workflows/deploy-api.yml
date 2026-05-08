@@ -1,0 +1,32 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - server/**
+
+jobs:
+  deploy:
+    name: Lint, Test & Deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - uses: akhileshns/heroku-deploy@v3.13.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: shopping-list-server
+          heroku_email: sasantazayoni@gmail.com
+          appdir: server
