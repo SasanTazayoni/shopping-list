@@ -31,4 +31,4 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/shopping-list-client.git
-          git subtree push --prefix client heroku main
+          git push heroku $(git subtree split --prefix client HEAD):main --force
