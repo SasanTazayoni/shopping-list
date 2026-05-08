@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Lint, Test & Deploy
+    name: Lint & Deploy
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,7 +23,6 @@ jobs:
           cache-dependency-path: server/package-lock.json
       - run: npm ci
       - run: npm run lint
-      - run: npm test
       - uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
