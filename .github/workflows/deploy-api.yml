@@ -16,6 +16,8 @@ jobs:
         working-directory: server
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -24,7 +26,6 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - name: Deploy to Heroku
-        working-directory: ${{ github.workspace }}
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
