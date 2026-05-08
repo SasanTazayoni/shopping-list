@@ -53,7 +53,7 @@ function App() {
       }
     }
     loadItems();
-  }, []);
+  }, [toast.show]);
 
   const filteredList = [...shoppingList]
     .filter((item) => {

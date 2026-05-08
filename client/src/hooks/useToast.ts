@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useToast(durationMs = 2500, fadeMs = 500) {
   const [message, setMessage] = useState("");
@@ -7,7 +7,7 @@ export function useToast(durationMs = 2500, fadeMs = 500) {
   const mainRef = useRef<number | null>(null);
   const fadeRef = useRef<number | null>(null);
 
-  const show = (msg: string) => {
+  const show = useCallback((msg: string) => {
     if (mainRef.current) clearTimeout(mainRef.current);
     if (fadeRef.current) clearTimeout(fadeRef.current);
 
@@ -18,7 +18,7 @@ export function useToast(durationMs = 2500, fadeMs = 500) {
       setFading(true);
       fadeRef.current = window.setTimeout(() => setMessage(""), fadeMs);
     }, durationMs);
-  };
+  }, [durationMs, fadeMs]);
 
   useEffect(() => {
     return () => {
