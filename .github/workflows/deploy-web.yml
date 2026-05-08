@@ -31,3 +31,4 @@ jobs:
           heroku_app_name: shopping-list-client
           heroku_email: sasantazayoni@gmail.com
           appdir: client
+          buildpack: heroku/nodejs
