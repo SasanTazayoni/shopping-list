@@ -25,10 +25,9 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
-      - uses: akhileshns/heroku-deploy@v3.13.15
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: shopping-list-client
-          heroku_email: sasantazayoni@gmail.com
-          appdir: client
-          buildpack: heroku/nodejs
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/shopping-list-client.git
+          git subtree push --prefix client heroku main
