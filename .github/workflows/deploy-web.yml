@@ -15,8 +15,8 @@ jobs:
       run:
         working-directory: client
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: 24
           cache: npm
@@ -29,5 +29,6 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
+          cd $GITHUB_WORKSPACE
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/shopping-list-client.git
           git subtree push --prefix client heroku main
