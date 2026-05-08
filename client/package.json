@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "serve -s dist",
-    "test": "vitest",
-    "test-ui": "vitest --ui"
+    "test": "vitest"
   },
   "dependencies": {
     "lucide-react": "^0.577.0",
