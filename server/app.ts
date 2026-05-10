@@ -1,8 +1,10 @@
+import cors from "cors";
 import express, { Request, Response } from "express";
 import { deleteItem, getItem, getItems, postItem, updateItem } from "./db.js";
 
 const app = express();
 
+app.use(cors({ origin: process.env.CLIENT_ORIGIN }));
 app.use(express.json());
 
 app.get("/api/shopping-items", async (_req: Request, res: Response) => {
