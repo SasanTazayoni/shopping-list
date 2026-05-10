@@ -16,13 +16,13 @@ A full-stack shopping list app built with React (frontend) and Express (backend)
 
 - React 19 with TypeScript
 - `useReducer` for state management
-- `fetch` for API communication
+- Axios for API communication
 - Vite for development and bundling
 
 **Backend**
 
-- Node.js with Express
-- In-memory storage (no database)
+- Node.js with Express and TypeScript
+- PostgreSQL database
 - REST API with 4 endpoints
 
 ## Getting Started
@@ -30,11 +30,11 @@ A full-stack shopping list app built with React (frontend) and Express (backend)
 **Clone the repository:**
 
 ```bash
-git clone https://github.com/your-username/my-inventory.git
-cd my-inventory
+git clone https://github.com/SasanTazayoni/shopping-list.git
+cd shopping-list
 ```
 
-**Install dependencies** (run each in a separate terminal from the project root):
+**Install dependencies** (run each from the project root):
 
 ```bash
 cd client && npm install
@@ -44,23 +44,37 @@ cd client && npm install
 cd server && npm install
 ```
 
-You need two terminals running at the same time:
+**Set up environment variables:**
 
-**Terminal 1 — Start the API server:**
+Create `server/.env`:
+
+```env
+PORT=3000
+DATABASE_URL=postgresql://user:password@localhost:5432/your_db
+```
+
+**Initialise the database:**
 
 ```bash
+cd server
+npm run init-db
+```
+
+**Start the app** (two terminals):
+
+```bash
+# Terminal 1 — API server
 cd server
 npm run dev
 ```
 
-**Terminal 2 — Start the frontend:**
-
 ```bash
+# Terminal 2 — Frontend
 cd client
 npm run dev
 ```
 
-Then open `http://localhost:5173/shopping-list/` in your browser.
+Then open `http://localhost:5173` in your browser.
 
 ## API Endpoints
 
@@ -90,6 +104,47 @@ curl -X DELETE http://localhost:3000/api/shopping-items/<id>
 ## Running Tests
 
 ```bash
-cd client
-npm run test
+cd client && npm run test
 ```
+
+## Deployment
+
+The app is deployed as two separate Heroku apps — one for the client and one for the server.
+
+**Infrastructure:**
+
+- Frontend → `shopping-list-client` (Heroku)
+- Backend → `shopping-list-server` (Heroku)
+- Database → PostgreSQL on [Neon](https://neon.tech)
+
+**CI/CD:**
+
+GitHub Actions workflows handle deployment automatically on push to `main`:
+
+- Changes in `client/` trigger the frontend deploy
+- Changes in `server/` trigger the backend deploy
+
+Both workflows lint and test before deploying. The `build.yml` workflow runs on pull requests.
+
+**Required GitHub secret:**
+
+| Secret | Description |
+| ------ | ----------- |
+| `HEROKU_API_KEY` | From Heroku → Account Settings → API Key |
+
+**Required Heroku config vars:**
+
+`shopping-list-server`:
+
+| Variable | Value |
+| -------- | ----- |
+| `DATABASE_URL` | Neon PostgreSQL connection string |
+| `CLIENT_ORIGIN` | URL of the deployed frontend |
+| `NPM_CONFIG_PRODUCTION` | `false` |
+
+`shopping-list-client`:
+
+| Variable | Value |
+| -------- | ----- |
+| `VITE_API_URL` | URL of the deployed backend |
+| `NPM_CONFIG_PRODUCTION` | `false` |
