@@ -17,6 +17,8 @@ jobs:
         working-directory: server
     steps:
       - uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4.4.0
         with:
           node-version: 24
@@ -30,4 +32,4 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/shopping-list-server.git
-          git push heroku $(git subtree split --prefix server HEAD):refs/heads/main --force
+          git subtree push --prefix server heroku main
