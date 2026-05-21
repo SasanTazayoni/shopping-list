@@ -26,6 +26,7 @@ function App() {
   const quantityRef = useRef<HTMLInputElement>(null);
 
   const toast = useToast();
+  const { show: showToast } = toast;
 
   useEffect(() => {
     async function loadItems() {
@@ -47,7 +48,7 @@ function App() {
           })),
         });
       } catch (error) {
-        toast.show("Failed to load items. Please try again.");
+        showToast("Failed to load items. Please try again.");
         console.error("Failed to load shopping list items:", error);
         setError(true);
       } finally {
@@ -55,7 +56,7 @@ function App() {
       }
     }
     loadItems();
-  }, [toast.show]);
+  }, [showToast]);
 
   const filteredList = [...shoppingList]
     .filter((item) => {
