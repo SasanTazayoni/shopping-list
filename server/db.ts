@@ -1,27 +1,43 @@
-import "dotenv/config";
-import pg from "pg";
+import Database from "better-sqlite3";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const { Pool } = pg;
+const serverDir = path.dirname(fileURLToPath(import.meta.url));
+const db = new Database(path.join(serverDir, "shopping.db"));
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+db.pragma("journal_mode = WAL");
+
+export { db };
+
+type SqliteRow = Record<string, unknown>;
+
+function deserializeRow(row: SqliteRow) {
+  return { ...row, completed: row.completed === 1 };
+}
 
 export async function getItems() {
-  return await pool.query(
-    "SELECT * FROM shopping_items ORDER BY created_at ASC",
-  );
+  const rows = db
+    .prepare("SELECT * FROM shopping_items ORDER BY created_at ASC")
+    .all()
+    .map((rawRow: unknown) => deserializeRow(rawRow as SqliteRow));
+  return { rows };
 }
 
 export async function postItem(text: string, quantity: number) {
-  return await pool.query(
-    "INSERT INTO shopping_items (text, quantity) VALUES ($1, $2) RETURNING *",
-    [text, quantity],
-  );
+  const insertResult = db
+    .prepare("INSERT INTO shopping_items (text, quantity) VALUES (?, ?)")
+    .run(text, quantity);
+  const insertedRow = db
+    .prepare("SELECT * FROM shopping_items WHERE id = ?")
+    .get(insertResult.lastInsertRowid) as SqliteRow;
+  return { rows: [deserializeRow(insertedRow)] };
 }
 
 export async function getItem(id: string) {
-  return await pool.query("SELECT * FROM shopping_items WHERE id = $1", [id]);
+  const row = db
+    .prepare("SELECT * FROM shopping_items WHERE id = ?")
+    .get(id) as SqliteRow | undefined;
+  return { rows: row ? [deserializeRow(row)] : [] };
 }
 
 export async function updateItem(
@@ -31,15 +47,20 @@ export async function updateItem(
   completed_at: string | null,
   id: string,
 ) {
-  return await pool.query(
-    "UPDATE shopping_items SET text = $1, quantity = $2, completed = $3, completed_at = $4 WHERE id = $5 RETURNING *",
-    [text, quantity, completed, completed_at, id],
-  );
+  db.prepare(
+    "UPDATE shopping_items SET text = ?, quantity = ?, completed = ?, completed_at = ? WHERE id = ?",
+  ).run(text, quantity, completed ? 1 : 0, completed_at, id);
+  const updatedRow = db
+    .prepare("SELECT * FROM shopping_items WHERE id = ?")
+    .get(id) as SqliteRow;
+  return { rows: [deserializeRow(updatedRow)] };
 }
 
 export async function deleteItem(id: string) {
-  return await pool.query(
-    "DELETE FROM shopping_items WHERE id = $1 RETURNING id",
-    [id],
-  );
+  const existingRow = db
+    .prepare("SELECT id FROM shopping_items WHERE id = ?")
+    .get(id) as SqliteRow | undefined;
+  if (!existingRow) return { rows: [] };
+  db.prepare("DELETE FROM shopping_items WHERE id = ?").run(id);
+  return { rows: [existingRow] };
 }

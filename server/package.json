@@ -11,10 +11,11 @@
     "init-db": "tsx init-db.ts"
   },
   "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "pg": "^8.20.0",
     "tsx": "^4.22.3"
   },
   "devDependencies": {
@@ -22,7 +23,6 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
-    "@types/pg": "^8.20.0",
     "@types/supertest": "^7.2.0",
     "@vitest/coverage-v8": "^4.1.2",
     "eslint": "^10.3.0",
