@@ -11,8 +11,24 @@ export { db };
 
 type SqliteRow = Record<string, unknown>;
 
-function deserializeRow(row: SqliteRow) {
-  return { ...row, completed: row.completed === 1 };
+export interface ShoppingItem {
+  id: number;
+  text: string;
+  quantity: number;
+  completed: boolean;
+  completed_at: string | null;
+  created_at: string;
+}
+
+function deserializeRow(row: SqliteRow): ShoppingItem {
+  return {
+    id: row.id as number,
+    text: row.text as string,
+    quantity: row.quantity as number,
+    completed: row.completed === 1,
+    completed_at: (row.completed_at as string | null) ?? null,
+    created_at: row.created_at as string,
+  };
 }
 
 export async function getItems() {
