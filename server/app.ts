@@ -1,6 +1,9 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
-import { deleteItem, getItem, getItems, postItem, updateItem } from "./db.js";
+import { deleteItem, getItems, postItem, updateItem } from "./db.js";
+import { logger } from "./logger.js";
+import { updateShoppingItem } from "./shopping-items-service.js";
+import { ValidationError, ItemNotFoundError } from "./errors.js";
 
 const app = express();
 
@@ -31,52 +34,28 @@ app.post("/api/shopping-items", async (req: Request, res: Response) => {
 app.put("/api/shopping-items/:id", async (req: Request, res: Response) => {
   const { id } = req.params as { id: string };
 
-  if (
-    req.body.text !== undefined &&
-    (typeof req.body.text !== "string" || req.body.text.trim() === "")
-  ) {
-    res.status(400).json({ error: "text must be a non-empty string" });
-    return;
+  try {
+    const updatedItem = await updateShoppingItem({
+      id, 
+      text: req.body.text, 
+      quantity: req.body.quantity, 
+      completed: req.body.completed
+    });
+    return res.json(updatedItem);
+
+  } catch(error) {
+    logger.error(`Error updating item with id ${id}: ${JSON.stringify(error)}`);
+
+    if (error instanceof ValidationError) {
+      res.status(400).json({ error: error.message });
+      return;
+    } else if (error instanceof ItemNotFoundError) {
+      res.status(404).json({ error: error.message });
+      return;
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
-  if (
-    req.body.quantity !== undefined &&
-    (!Number.isInteger(req.body.quantity) || req.body.quantity < 1)
-  ) {
-    res.status(400).json({ error: "quantity must be a positive integer" });
-    return;
-  }
-  if (
-    req.body.completed !== undefined &&
-    typeof req.body.completed !== "boolean"
-  ) {
-    res.status(400).json({ error: "completed must be true or false" });
-    return;
-  }
-
-  const existingItem = await getItem(id);
-
-  if (existingItem.rows.length === 0) {
-    res.status(404).json({ error: "Item not found" });
-    return;
-  }
-
-  const item = existingItem.rows[0];
-  const text = req.body.text ?? item.text;
-  const quantity = req.body.quantity ?? item.quantity;
-  let completed = item.completed;
-  let completed_at = item.completed_at;
-
-  if (
-    req.body.completed !== undefined &&
-    req.body.completed !== item.completed
-  ) {
-    completed = req.body.completed;
-    completed_at = completed ? new Date().toISOString() : null;
-  }
-
-  const result = await updateItem(text, quantity, completed, completed_at, id);
-
-  res.json(result.rows[0]);
 });
 
 app.delete("/api/shopping-items/:id", async (req: Request, res: Response) => {
