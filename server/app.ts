@@ -1,6 +1,6 @@
 import cors from "cors";
 import express, { Request, Response } from "express";
-import { deleteItem, getItems, postItem, updateItem } from "./db.js";
+import { deleteItem, getItems, postItem } from "./db.js";
 import { logger } from "./logger.js";
 import { updateShoppingItem } from "./shopping-items-service.js";
 import { ValidationError, ItemNotFoundError } from "./errors.js";
@@ -36,14 +36,13 @@ app.put("/api/shopping-items/:id", async (req: Request, res: Response) => {
 
   try {
     const updatedItem = await updateShoppingItem({
-      id, 
-      text: req.body.text, 
-      quantity: req.body.quantity, 
-      completed: req.body.completed
+      id,
+      text: req.body.text,
+      quantity: req.body.quantity,
+      completed: req.body.completed,
     });
     return res.json(updatedItem);
-
-  } catch(error) {
+  } catch (error) {
     logger.error(`Error updating item with id ${id}: ${JSON.stringify(error)}`);
 
     if (error instanceof ValidationError) {
