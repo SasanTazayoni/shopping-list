@@ -1,5 +1,7 @@
 # Shopping List App
 
+![HTML](./tech/html.png) ![CSS](./tech/css.png) ![Typescript](./tech/typescript.png) ![Vite](./tech/vite.png) ![React](./tech/react.png) ![REST-API](./tech/restapi.png) ![PostgreSQL](./tech/postgresql.png) ![Neon](./tech/neon.png) ![Node](./tech/node.png) ![Express](./tech/express.png) ![ESLint](./tech/eslint.png) ![GitHub Actions](./tech/githubactions.png) ![VSCode](./tech/vscode.png) ![Heroku](./tech/heroku.png)
+
 A full-stack shopping list app built with React (frontend) and Express (backend).
 
 ## Features
